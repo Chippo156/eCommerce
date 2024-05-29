@@ -1,0 +1,120 @@
+.banner {
+  background-image: url(/assets/imgs/banner_2.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 316px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.content > h3 {
+  font-size: 40px;
+  color: #000;
+  font-weight: bold;
+}
+.content a {
+  text-decoration: none;
+  color: #000;
+}
+.search-product {
+  background-color: #f9f1e7;
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.search-left {
+  display: flex;
+  gap: 40px;
+}
+.search-right {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+.product-quantity {
+  padding: 10px;
+  background-color: #fff;
+  text-align: center;
+}
+.short {
+  width: 90px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  text-align: center;
+}
+
+.list_product {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+}
+.product {
+  position: relative;
+  border-radius: 5px;
+  width: 270px;
+}
+.product-infor {
+  background-color: #f4f5f7;
+  padding: 10px;
+  font-size: 16px;
+}
+.product-infor > span {
+  margin-right: 10px;
+}
+.product-image {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+.product-sale {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  right: 25px;
+  top: 20px;
+  border-radius: 50%;
+  background-color: #e97171;
+  text-align: center;
+  line-height: 35px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+.product-new {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  right: 25px;
+  top: 20px;
+  border-radius: 50%;
+  background-color: #2ec1ac;
+  text-align: center;
+  line-height: 35px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+.show-more {
+  text-align: center;
+  margin: 20px;
+  background-color: transparent;
+  border-radius: 2px;
+  border: 1px solid #b88e2f;
+  padding: 8px 30px;
+  color: #b88e2f;
+  font-weight: 600;
+}
+.achievements {
+  background-color: #faf3ea;
+  height: 200px;
+  display: flex;
+  align-items: center;
+}
