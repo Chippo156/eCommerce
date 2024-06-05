@@ -29,3 +29,15 @@ nav {
 .nav-infor_item {
   cursor: pointer;
 }
+.nav-infor_item {
+  cursor: pointer;
+  border: none;
+}
+.nav-infor_item > svg:focus {
+  outline: none;
+  border: none;
+}
+.nav-infor_item > svg:hover {
+  fill: red;
+  stroke: #b88e2f;
+}

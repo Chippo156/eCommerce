@@ -2,9 +2,9 @@
 <main>
   <section class="navigation">
     <div class="container navigation">
-      <a href="/">Home</a>
+      <a href="" routerLink="/">Home</a>
       <i class="fas fa-chevron-right"></i>
-      <a href="/product">Product</a>
+      <a routerLink="/product">Product</a>
       <i class="fas fa-chevron-right"></i>
       <svg
         width="2"
@@ -21,19 +21,69 @@
   <section class="container">
     <div class="product-details">
       <div class="product-details_images">
-        <div class="image-child">
-          <img src="/assets/imgs/product_1.jpg" alt="" />
-          <img src="/assets/imgs/product_2.jpg" alt="" />
-          <img src="/assets/imgs/product_3.jpg" alt="" />
-          <img src="/assets/imgs/product_4.jpg" alt="" />
+        <div class="d-flex image-child">
+          <div
+            class="image-child"
+            *ngFor="let product_image of product?.product_images; let i = index"
+            [ngClass]="{ active: i === currentImageIndex }"
+            (click)="thumbnailClick(i)"
+          >
+            <img [src]="product_image.image_url" alt="" />
+          </div>
         </div>
-        <div class="image-main">
-          <img src="/assets/imgs/product_1.jpg" alt="" />
+        <div class="d-flex">
+          <div
+            id="carouselExample"
+            class="carousel slide"
+            data-bs-ride="carousel"
+          >
+            <div class="carousel-inner">
+              <div
+                *ngFor="let image of product?.product_images; let i = index"
+                class="carousel-item"
+                [ngClass]="{ active: i === currentImageIndex }"
+              >
+                <div class="square-image">
+                  <img
+                    [src]="image.image_url"
+                    class="product-image_slide"
+                    alt="Product Image"
+                  />
+                </div>
+              </div>
+              <button
+                class="carousel-control-prev"
+                type="button"
+                data-bs-targer="#carouselExample"
+                data-bs-slide="prev"
+                (click)="priviousImage()"
+              >
+                <span
+                  class="carousel-control-prev-icon"
+                  aria-hidden="true"
+                ></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button
+                class="carousel-control-next"
+                type="button"
+                data-bs-targer="#carouselExample"
+                data-bs-slide="next"
+                (click)="nextImage()"
+              >
+                <span
+                  class="carousel-control-next-icon"
+                  aria-hidden="true"
+                ></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="product-details_infor">
-        <h2 class="product-name">Asgaard sofa</h2>
-        <p class="product-price">Rs. 250,000.00</p>
+        <h2 class="product-name">{{ product?.name }}</h2>
+        <p class="product-price">Rs. {{ product?.price }}</p>
         <div class="product-evaluate">
           <div class="product-star">
             <i class="fa-solid fa-star"></i>
@@ -54,9 +104,7 @@
           <p>5 Customer Review</p>
         </div>
         <p class="product-desription">
-          Setting the bar as one of the loudest speakers in its class, the
-          Kilburn is a compact, stout-hearted hero with a well-balanced audio
-          which boasts a clear midrange and extended highs for a sound.
+          {{ product?.description }}
         </p>
         <div class="product-size">
           <p>Size</p>
@@ -82,12 +130,12 @@
         </div>
         <div class="product-cart">
           <div class="quantity">
-            <button>-</button>
-            <input type="text" value="1" />
-            <button>+</button>
+            <button (click)="decreaseQuantity()">-</button>
+            <input type="text" value="{{ quantity }}" />
+            <button (click)="increaseQuantity()">+</button>
           </div>
-          <button class="btn btn-add">Add to cart</button>
-          <button class="btn btn-add">+Compare</button>
+          <button class="btn btn-add" (click)="addToCart()">Add to cart</button>
+          <button class="btn btn-add" routerLink="/cart">Buy Now</button>
         </div>
       </div>
     </div>
@@ -122,42 +170,17 @@
   </section>
   <section class="related-product">
     <h3>Related Products</h3>
-    <div class="row">
-      <div class="product col-4">
-        <img class="product-image" src="/assets/imgs/product_1.jpg" alt="" />
+    <div class="row container">
+      <div class="product col-lg-4 col-md-6" *ngFor="let product of products">
+        <img class="product-image" [src]="product.url" alt="" />
         <div class="product-sale">30%</div>
         <div class="product-infor">
-          <h4>Syltherine</h4>
-          <p>Stylish cafe chair</p>
-          <span> <b>Rp 2.500.000</b></span>
+          <h4 class="product-name">{{ product.name }}</h4>
+          <p class="product-title">{{ product.description }}</p>
+          <span>
+            <b>Rp {{ product.price }}</b></span
+          >
           <del> Rp 3.500.000</del>
-        </div>
-      </div>
-      <div class="product col-4">
-        <img class="product-image" src="/assets/imgs/product_2.jpg" alt="" />
-        <div class="product-infor">
-          <h4>Leviosa</h4>
-          <p>Stylish cafe chair</p>
-          <span><b>Rp 2.500.000</b></span>
-        </div>
-      </div>
-      <div class="product col-4">
-        <img class="product-image" src="/assets/imgs/product_3.jpg" alt="" />
-        <div class="product-new">New</div>
-        <div class="product-infor">
-          <h4>Lolito</h4>
-          <p>Luxury big sofa</p>
-          <span><b>Rp 7.000.000</b></span>
-          <del>Rp 14.000.000</del>
-        </div>
-      </div>
-      <div class="product col-4">
-        <img class="product-image" src="/assets/imgs/product_4.jpg" alt="" />
-        <div class="product-sale">50%</div>
-        <div class="product-infor">
-          <h4>Respira</h4>
-          <p>Outdoor bar table and stool</p>
-          <span><b>Rp 7.000.000</b></span>
         </div>
       </div>
     </div>

@@ -35,7 +35,6 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
-
     AppRoutingModule,
   ],
   declarations: [
@@ -60,12 +59,15 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
     },
   ],
   bootstrap: [
+    // ProductDetailsComponent,
     // RegisterComponent,
-    LoginComponent,
-    // HomeComponent,
+    // LoginComponent,
+    HomeComponent,
     // AppComponent,
     // OrderComponent,
+    // ProductComponent,
     // OrderDetailComponent,
+    // CartDetailComponent,
   ],
 })
 export class AppModule {}

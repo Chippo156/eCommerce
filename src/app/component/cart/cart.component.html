@@ -1,4 +1,3 @@
-
 <section>
   <!-- Button trigger modal -->
   <!-- Modal -->
@@ -22,29 +21,17 @@
         </div>
         <div class="modal-body">
           <div class="product-cart">
-            <div class="product-cart-item">
-              <img
-                class="product-image"
-                src="/assets/imgs/product_1.jpg"
-                alt=""
-              />
+            <div class="product-cart-item" *ngFor="let item of cartItems">
+              <img class="product-image" [src]="item.product.url" alt="" />
               <div class="product-cart-infor">
-                <h4>Asgaard sofa</h4>
-                <span class="product-quantity fs-4"><b>1</b></span>
+                <h4>{{ item.product.name }}</h4>
+                <span class="product-quantity fs-4"
+                  ><b>{{ item.quantity }}</b></span
+                >
 
-                <p class="d-inline mx-3 fs-3 product-price">x Rs. 250,000.00</p>
-              </div>
-            </div>
-            <div class="product-cart-item">
-              <img
-                class="product-image"
-                src="/assets/imgs/product_2.jpg"
-                alt=""
-              />
-              <div class="product-cart-infor">
-                <h4>Leviosa</h4>
-                <span class="product-quantity fs-4"><b>1</b></span>
-                <p class="d-inline mx-3 fs-3 product-price">x Rs. 250,000.00</p>
+                <p class="d-inline mx-3 fs-3 product-price">
+                  x Rs. {{ item.product.price }}
+                </p>
               </div>
             </div>
           </div>
@@ -64,4 +51,3 @@
     </div>
   </div>
 </section>
-

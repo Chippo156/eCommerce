@@ -59,7 +59,7 @@
 .product {
   position: relative;
   border-radius: 5px;
-  width: 270px;
+  height: 500px;
 }
 .product-infor {
   background-color: #f4f5f7;
@@ -69,9 +69,15 @@
 .product-infor > span {
   margin-right: 10px;
 }
+.product_name {
+  height: 50px;
+}
+.product_title {
+  height: 50px;
+}
 .product-image {
   width: 100%;
-  height: auto;
+  height: 300px;
   border-radius: 5px;
 }
 .product-sale {
@@ -117,4 +123,13 @@
   height: 200px;
   display: flex;
   align-items: center;
+}
+.page-item {
+  border-radius: 10px;
+}
+.page-link {
+  color: #000;
+  text-decoration: none;
+  font-size: 25px;
+  padding: 15px;
 }

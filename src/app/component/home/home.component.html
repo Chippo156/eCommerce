@@ -36,77 +36,53 @@
   <section class="list_product container">
     <h3>Our Products</h3>
     <div class="row">
-      <div class="product col-4">
-        <img class="product-image" src="/assets/imgs/product_1.jpg" alt="" />
-        <div class="product-sale">30%</div>
-        <div class="product-infor">
-          <h4>Syltherine</h4>
-          <p>Stylish cafe chair</p>
-          <span> <b>Rp 2.500.000</b></span>
-          <del> Rp 3.500.000</del>
-        </div>
-      </div>
-      <div class="product col-4">
-        <img class="product-image" src="/assets/imgs/product_2.jpg" alt="" />
-        <div class="product-infor">
-          <h4>Leviosa</h4>
-          <p>Stylish cafe chair</p>
-          <span><b>Rp 2.500.000</b></span>
-        </div>
-      </div>
-      <div class="product col-4">
-        <img class="product-image" src="/assets/imgs/product_3.jpg" alt="" />
-        <div class="product-new">New</div>
-        <div class="product-infor">
-          <h4>Lolito</h4>
-          <p>Luxury big sofa</p>
-          <span><b>Rp 7.000.000</b></span>
-          <del>Rp 14.000.000</del>
-        </div>
-      </div>
-      <div class="product col-4">
-        <img class="product-image" src="/assets/imgs/product_4.jpg" alt="" />
-        <div class="product-sale">50%</div>
-        <div class="product-infor">
-          <h4>Respira</h4>
-          <p>Outdoor bar table and stool</p>
-          <span><b>Rp 7.000.000</b></span>
+      <div class="col-lg-3 col-md-6" *ngFor="let product of products">
+        <div class="product">
+          <img class="product-image" [src]="product.url" alt="" />
+          <div
+            class="product-sale"
+            *ngIf="product.product_sale.newProduct === false"
+          >
+            {{ product.product_sale.sale }}%
+          </div>
+          <div
+            class="product-new"
+            *ngIf="product.product_sale.newProduct === true"
+          >
+            New
+          </div>
+
+          <div class="product-infor">
+            <h4 class="product_name">{{ product.name }}</h4>
+            <p class="product_title">{{ product.description }}</p>
+            <span class="product_price">
+              <b>Rp {{ product.price }}</b></span
+            >
+            <del class="price_sale">
+              Rp {{ product.price * (product.product_sale.sale / 100) }}</del
+            >
+          </div>
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="product col-3">
-        <img class="product-image" src="/assets/imgs/product_5.jpg" alt="" />
-        <div class="product-infor">
-          <h4>Grifo</h4>
-          <p>Night lamp</p>
-          <span><b>Rp 7.000.000</b></span>
+    <div class="row" *ngIf="checkShowMore">
+      <div class="product col-lg-3 col-md-6" *ngFor="let product of products">
+        <img class="product-image" [src]="product.url" alt="" />
+        <div class="product-sale">{{ product.product_sale.sale }} %</div>
+        <div
+          class="product-new"
+          *ngIf="product.product_sale.newProduct === true"
+        >
+          New
         </div>
-      </div>
-      <div class="product col-3">
-        <img class="product-image" src="/assets/imgs/product_6.jpg" alt="" />
+        <div class="product-new" *ngIf="product.product_sale === null">New</div>
         <div class="product-infor">
-          <h4>Grifo</h4>
-          <p>Night lamp</p>
-          <span><b>Rp 7.000.000</b></span>
-        </div>
-      </div>
-      <div class="product col-3">
-        <img class="product-image" src="/assets/imgs/product_7.jpg" alt="" />
-        <div class="product-new">New</div>
-        <div class="product-infor">
-          <h4>Grifo</h4>
-          <p>Night lamp</p>
-          <span><b>Rp 7.000.000</b></span>
-        </div>
-      </div>
-      <div class="product col-3">
-        <img class="product-image" src="/assets/imgs/product_5.jpg" alt="" />
-        <div class="product-new">New</div>
-        <div class="product-infor">
-          <h4>Grifo</h4>
-          <p>Night lamp</p>
-          <span><b>Rp 7.000.000</b></span>
+          <h4 class="product_name">{{ product.name }}</h4>
+          <p class="product_title">{{ product.description }}</p>
+          <span class="product_price">
+            <b>Rp {{ product.price }}</b></span
+          >
+          <del class="price_sale"> Rp 3.500.000</del>
         </div>
       </div>
     </div>

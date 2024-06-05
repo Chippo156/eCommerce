@@ -21,14 +21,14 @@
           <th>Subtotal</th>
           <th></th>
         </tr>
-        <tr>
+        <tr *ngFor="let item of cartItems">
           <td>
-            <img class="img-cart" src="/assets/imgs/product_1.jpg" alt="" />
+            <img class="img-cart" [src]="item.product.url" alt="" />
           </td>
-          <td>Asgaard sofa</td>
-          <td>Rs. 250,000.00</td>
-          <td><input type="text" placeholder="1" /></td>
-          <td>Rs. 250,000.00</td>
+          <td>{{ item.product.name }}</td>
+          <td>Rs. {{ item.product.price }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>Rs. {{ totalMoney }}</td>
           <td>
             <svg
               width="22"
@@ -48,9 +48,12 @@
       <div class="cart-total">
         <h3 class="text-center">Cart Totals</h3>
         <p>
-          <b>Subtotal: </b> <span class="subtotal-price">Rs. 250,000.00</span>
+          <b>Subtotal: </b>
+          <span class="subtotal-price">Rs. {{ totalMoney }}</span>
         </p>
-        <p><b>Total:</b> <span class="total-price"> Rs. 250,000.00</span></p>
+        <p>
+          <b>Total:</b> <span class="total-price"> Rs. {{ totalMoney }}</span>
+        </p>
 
         <button class="checkout">Checkout</button>
       </div>
