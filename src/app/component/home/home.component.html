@@ -1,4 +1,9 @@
-<app-header></app-header>
+<app-header
+  [keyword]="keyword"
+  (searchEvent)="
+    getProducts($event, selectedCategoryId, currentPage, itemsPerPage)
+  "
+></app-header>
 <main>
   <section class="banner">
     <div class="content-left"></div>
@@ -66,7 +71,10 @@
       </div>
     </div>
     <div class="row" *ngIf="checkShowMore">
-      <div class="product col-lg-3 col-md-6" *ngFor="let product of products">
+      <div
+        class="product col-lg-3 col-md-6"
+        *ngFor="let product of productShowMore"
+      >
         <img class="product-image" [src]="product.url" alt="" />
         <div class="product-sale">{{ product.product_sale.sale }} %</div>
         <div
@@ -86,7 +94,9 @@
         </div>
       </div>
     </div>
-    <button class="show-more">Show more</button>
+    <button class="show-more" (click)="checkShowMoreProducts()">
+      Show more
+    </button>
   </section>
   <section class="explore-product">
     <div class="container explore-product">

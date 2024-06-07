@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   EventEmitter,
+  Input,
   OnInit,
   Output,
   ViewChild,
@@ -18,7 +19,7 @@ import { ProductImage } from '../../models/product.image';
 import { environtment } from '../../environments/environment';
 import { Category } from '../../models/category';
 import { CartService } from '../../service/cart.service';
-import { CartComponent } from '../cart/cart.component';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-details',
@@ -29,13 +30,17 @@ import { CartComponent } from '../cart/cart.component';
 export class ProductDetailsComponent implements OnInit {
   constructor(
     private productService: ProductService,
-    private cartService: CartService
+    private cartService: CartService,
+    private router: ActivatedRoute
   ) {}
 
+  productShowMore: Product[] = [];
+  checkShowMore: boolean = false;
   product?: Product;
   productId: number = 1;
   currentImageIndex: number = 0;
   quantity: number = 1;
+  quantityChange = new EventEmitter<number>();
   products: Product[] = [];
   categories: Category[] = [];
   currentPage: number = 0;
@@ -47,7 +52,7 @@ export class ProductDetailsComponent implements OnInit {
   ngOnInit() {
     debugger;
 
-    const idParam = 4;
+    const idParam = this.router.snapshot.paramMap.get('id');
     if (idParam !== null) {
       this.productId = +idParam;
     }
@@ -59,6 +64,16 @@ export class ProductDetailsComponent implements OnInit {
             response.product_images.forEach((product_images: ProductImage) => {
               product_images.image_url = `${environtment.apiBaseUrl}/products/viewImages/${product_images.image_url}`;
             });
+            if (response.product_sale === null) {
+              response.product_sale = {
+                id: 0,
+                description: '',
+                sale: 0,
+                newProduct: true,
+                startDate: new Date(),
+                endDate: new Date(),
+              };
+            }
           }
           debugger;
           this.product = response;
@@ -133,6 +148,16 @@ export class ProductDetailsComponent implements OnInit {
           debugger;
           response.productResponses.forEach((product: Product) => {
             product.url = `${environtment.apiBaseUrl}/products/viewImages/${product.thumbnail}`;
+            if (product.product_sale === null) {
+              product.product_sale = {
+                id: 0,
+                description: '',
+                sale: 0,
+                newProduct: true,
+                startDate: new Date(),
+                endDate: new Date(),
+              };
+            }
           });
           this.products = response.productResponses;
           this.totalPages = response.totalPage;
@@ -154,6 +179,17 @@ export class ProductDetailsComponent implements OnInit {
     } else {
       console.log('Cannot add cart because product is not available');
     }
+  }
+  checkShowMoreProducts() {
+    this.currentPage++;
+    this.getProducts(
+      this.keyword,
+      this.selectedCategoryId,
+      this.currentPage,
+      this.itemsPerPage
+    );
+    this.productShowMore = this.products;
+    this.checkShowMore = true;
   }
 
   buyNow() {}

@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Injectable, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -17,6 +17,7 @@ import { environtment } from '../../environments/environment';
 @Injectable()
 export class HomeComponent implements OnInit {
   products: Product[] = [];
+  productShowMore: Product[] = [];
   categories: Category[] = [];
   currentPage: number = 0;
   itemsPerPage: number = 12;
@@ -31,6 +32,7 @@ export class HomeComponent implements OnInit {
     this.selectedCategoryId = 2;
     this.keyword = '';
   }
+
   ngOnInit(): void {
     debugger;
     this.getProducts(
@@ -75,5 +77,15 @@ export class HomeComponent implements OnInit {
           console.log(error);
         },
       });
+  }
+  checkShowMoreProducts() {
+    this.getProducts(
+      this.keyword,
+      this.selectedCategoryId,
+      this.currentPage + 1,
+      this.itemsPerPage
+    );
+    this.productShowMore = this.products;
+    this.checkShowMore = true;
   }
 }

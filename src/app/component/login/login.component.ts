@@ -1,10 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { LoginDTO } from '../../dtos/loginDto';
-import { Route, Router } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { UserService } from '../../service/user.service';
 import { LoginResponse } from '../../responses/LoginResponse';
 import { TokenService } from '../../service/token.service';
 import { NgForm } from '@angular/forms';
+import { UserResponse } from '../../responses/userResponse';
 
 @Component({
   selector: 'app-login',
@@ -15,11 +16,14 @@ export class LoginComponent {
   @ViewChild('loginForm') loginForm!: NgForm;
   phone_number: string;
   password: string;
+  rememberMe: boolean = true;
+  userResponse?: UserResponse;
 
   constructor(
-    private router: Router,
     private userService: UserService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private router: Router,
+    private activeRoute: ActivatedRoute
   ) {
     this.phone_number = '';
     this.password = '';
@@ -35,6 +39,31 @@ export class LoginComponent {
         debugger;
         const { token } = response;
         this.tokenService.setToken(token);
+        this.userService.getUserDetails(token).subscribe({
+          next: (response: any) => {
+            debugger;
+            this.userResponse = {
+              id: response.id,
+              full_name: response.full_name,
+              phone_number: response.phone_number,
+              address: response.address,
+              is_active: response.is_active,
+              date_of_birth: new Date(response.date_of_birth),
+              facebook_account_id: response.facebook_account_id,
+              google_account_id: response.google_account_id,
+              role: response.role,
+            };
+            this.userService.saveUserResponseToLocalStorage(this.userResponse);
+            this.router.navigate(['/']);
+          },
+          complete: () => {
+            debugger;
+          },
+          error: (error) => {
+            debugger;
+            console.log(error);
+          },
+        });
       },
       complete: () => {
         debugger;

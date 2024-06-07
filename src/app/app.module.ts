@@ -19,7 +19,6 @@ import { FooterComponent } from './component/footer/footer.component';
 import { RegisterComponent } from './component/register/register.component';
 import { LoginComponent } from './component/login/login.component';
 import { CartComponent } from './component/cart/cart.component';
-import { CartDetailComponent } from './component/cart-detail/cart-detail.component';
 import { ProductComponent } from './component/product/product.component';
 import { ProductDetailsComponent } from './component/product-details/product-details.component';
 import { BlogComponent } from './component/blog/blog.component';
@@ -27,6 +26,7 @@ import { ContactComponent } from './component/contact/contact.component';
 import { RouterOutlet } from '@angular/router';
 import { AppComponent } from './app.component';
 import { TokenInterceptor } from './interceptors/token.interceptor';
+import { CartDetailComponent } from './component/cart-detail/cart-detail.component';
 @NgModule({
   imports: [
     BrowserModule,
@@ -59,15 +59,15 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
     },
   ],
   bootstrap: [
+    // CartDetailComponent,
     // ProductDetailsComponent,
     // RegisterComponent,
     // LoginComponent,
-    HomeComponent,
-    // AppComponent,
+    // HomeComponent,
+    AppComponent,
     // OrderComponent,
     // ProductComponent,
     // OrderDetailComponent,
-    // CartDetailComponent,
   ],
 })
 export class AppModule {}

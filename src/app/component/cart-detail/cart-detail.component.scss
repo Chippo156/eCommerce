@@ -16,66 +16,56 @@
   text-decoration: none;
   color: #000;
 }
-.cart {
-  display: flex;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  gap: 40px;
+.order-item {
+  border-bottom: 1px solid #9f9f9f;
+  margin-bottom: 5px;
+}
+.address {
+  justify-content: space-between;
+  align-items: center;
+}
+.cart > table td {
+  font-size: 16px;
+  padding: 10px 72px;
+  text-align: center;
+  color: #000;
 }
 .img-cart {
-  width: 100px;
+  width: 140px;
   border-radius: 20px;
 }
-
-table th {
-  background-color: #f9f1e7;
-  font-size: 18px;
-  font-weight: 600;
-  padding: 10px 30px;
-}
-table td {
-  font-size: 16px;
-  padding: 15px 15px;
-  text-align: center;
-  color: #9f9f9f;
-}
-table td:nth-child(5) {
-  color: #000;
-  font-weight: bolder;
-}
-table td:nth-child(4) > input {
-  width: 40px;
-  text-align: center;
-  border: 1px solid #9f9f9f;
-  border-radius: 5px;
-}
-
-.cart-total {
-  background-color: #f9f1e7;
-  padding: 50px 80px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.checkout {
-  background-color: transparent;
-  border-radius: 20px;
-  padding: 10px;
-  border: 1px solid #000;
-  font-weight: 600;
-}
-.subtotal-price {
-  color: #9f9f9f;
-  margin: 10px;
-}
-.total-price {
-  color: #b88e2f;
-  font-weight: 600;
-  margin: 20px;
-}
-.achievements {
-  background-color: #faf3ea;
-  height: 200px;
+.voucher {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+.shop-technical {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.shop-voucher {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.message {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.shipping-method {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.total {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.total-money > table td {
+  padding-left: 60px;
+  padding-top: 10px;
 }

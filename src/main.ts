@@ -6,12 +6,10 @@ import { FooterComponent } from './app/component/footer/footer.component';
 import { HomeComponent } from './app/component/home/home.component';
 import { ProductComponent } from './app/component/product/product.component';
 import { ProductDetailsComponent } from './app/component/product-details/product-details.component';
-import { CartComponent } from './app/component/cart/cart.component';
 import { ContactComponent } from './app/component/contact/contact.component';
 import { BlogComponent } from './app/component/blog/blog.component';
 import { LoginComponent } from './app/component/login/login.component';
 import { RegisterComponent } from './app/component/register/register.component';
-import { CartDetailComponent } from './app/component/cart-detail/cart-detail.component';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 
