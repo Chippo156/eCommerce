@@ -15,8 +15,6 @@ import lombok.*;
 @ToString
 @Builder
 public class ProductDTO {
-
-
     @JsonProperty("product_name")
     @NotBlank
     @Size(min = 3, max = 300,message = "Product name must be between 3 and 300 characters")
@@ -28,4 +26,6 @@ public class ProductDTO {
     private String color;
     @JsonProperty("category_id")
     private Long categoryId;
+    @JsonProperty("sale_id")
+    private Long saleId;
 }

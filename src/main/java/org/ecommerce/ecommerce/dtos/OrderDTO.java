@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Data
 @Getter
 @Setter
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 @ToString
 
 public class OrderDTO {
+
 
     @JsonProperty("full_name")
     private String fullName;
@@ -31,7 +34,6 @@ public class OrderDTO {
     @JsonProperty("user_id")
     @Min(value=1, message = "User ID must be greater than or equal 1")
     private Long userId;
-
     @JsonProperty("shipping_method")
     private String shippingMethod;
     @JsonProperty("payment_method")
@@ -40,6 +42,13 @@ public class OrderDTO {
     private String shippingAddress;
     @JsonProperty("shipping_date")
     private LocalDate shippingDate;
+    @JsonProperty("tracking_number")
+    private String trackingNumber;
+    @JsonProperty("cart_items")
+    private List<CartItemDTO> cartItems;
+
+
+
 
 
 

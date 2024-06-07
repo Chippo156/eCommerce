@@ -12,14 +12,12 @@ import org.ecommerce.ecommerce.models.OrderDetail;
 @ToString
 @Builder
 public class OrderDetaiResponse {
-    @JsonProperty("order_id")
-    private Long orderId;
+
     @JsonProperty("product_id")
     private Long productId;
 
     private double price;
     @JsonProperty("number_of_products")
-
     private int numberOfProducts;
     @JsonProperty("total_money")
     private double totalMoney;
@@ -30,7 +28,7 @@ public class OrderDetaiResponse {
     public static OrderDetaiResponse fromOrderDetail(OrderDetail orderDetail)
     {
         return OrderDetaiResponse.builder()
-                .orderId(orderDetail.getOrder().getId())
+
                 .productId(orderDetail.getProduct().getId())
                 .price(orderDetail.getPrice())
                 .numberOfProducts(orderDetail.getNumberOfProducts())

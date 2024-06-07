@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Setter
@@ -36,7 +37,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "is_active")
     private boolean isActive;
     @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
+    private Date dateOfBirth;
     @Column(name = "facebook_account_id")
     private int facebookAccountId;
     @Column(name = "google_account_id")

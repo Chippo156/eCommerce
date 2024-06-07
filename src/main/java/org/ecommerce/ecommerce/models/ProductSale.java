@@ -18,13 +18,11 @@ public class ProductSale {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "description")
     private String description;
-    private int sale;
+    private double sale;
     @Column(name = "new_product",columnDefinition = "tinyint(1)" ,nullable = false)
     private boolean newProduct;
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
     @Column(name = "start_date")
     private LocalDate startDate;
     @Column(name = "end_date")

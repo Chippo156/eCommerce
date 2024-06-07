@@ -15,7 +15,7 @@ import java.util.Date;
 @ToString
 public class UserDTO {
 
-    @JsonProperty("full_name")
+    @JsonProperty("fullname")
     private String fullName;
     @JsonProperty("phone_number")
     @NotBlank(message = "Phone number cannot be empty")
@@ -29,7 +29,7 @@ public class UserDTO {
     private String retypePassword;
 
     @JsonProperty("date_of_birth")
-    private LocalDate dateOfBirth;
+    private Date dateOfBirth;
 
     @JsonProperty("facebook_account_id")
     private int facebookAccountId;

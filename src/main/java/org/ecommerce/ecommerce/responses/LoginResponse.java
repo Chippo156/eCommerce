@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class LoginResponse {
-
     private String message;
     private String token;
 }

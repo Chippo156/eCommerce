@@ -7,9 +7,11 @@ import org.ecommerce.ecommerce.exceptions.InvalidParamException;
 import org.ecommerce.ecommerce.models.Category;
 import org.ecommerce.ecommerce.models.Product;
 import org.ecommerce.ecommerce.models.ProductImage;
+import org.ecommerce.ecommerce.models.ProductSale;
 import org.ecommerce.ecommerce.repository.CategoryRepository;
 import org.ecommerce.ecommerce.repository.ProductImageRepository;
 import org.ecommerce.ecommerce.repository.ProductRepository;
+import org.ecommerce.ecommerce.repository.ProductSaleRepository;
 import org.ecommerce.ecommerce.responses.ProductResponse;
 import org.ecommerce.ecommerce.services.iProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductService implements iProductService {
@@ -27,10 +31,15 @@ public class ProductService implements iProductService {
     private CategoryRepository categoryRepository;
     @Autowired
     private ProductImageRepository productImageRepository;
+    @Autowired
+    private ProductSaleRepository productSaleRepository;
     @Override
     public Product createProduct(ProductDTO productDTO) throws DataNotFoundException {
-        Category category = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(() -> new DataNotFoundException("Cannot find category with id: " + productDTO.getCategoryId())
+        Category category = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(()
+                -> new DataNotFoundException("Cannot find category with id: " + productDTO.getCategoryId())
         );
+        ProductSale productSale = productSaleRepository.findById(productDTO.getSaleId()).orElseThrow(()
+                -> new DataNotFoundException("Cannot find sale with id: " + productDTO.getSaleId()));
         Product product = Product.builder()
                 .name(productDTO.getProductName())
                 .price(productDTO.getPrice())
@@ -39,7 +48,9 @@ public class ProductService implements iProductService {
                 .color(productDTO.getColor())
                 .size(productDTO.getSize())
                 .category(category)
+                .sale(productSale)
                 .build();
+
         return productRepository.save(product);
     }
 
@@ -55,6 +66,9 @@ public class ProductService implements iProductService {
             product.setSize(productDTO.getSize());
             Category category = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(() -> new DataNotFoundException("Cannot find category with id: " + productDTO.getCategoryId()));
             product.setCategory(category);
+            ProductSale productSale = productSaleRepository.findById(productDTO.getSaleId()).orElseThrow(()
+                    -> new DataNotFoundException("Cannot find sale with id: " + productDTO.getSaleId()));
+            product.setSale(productSale);
             return productRepository.save(product);
         } catch (Exception e) {
             throw new DataNotFoundException("Cannot find product with id: " + productId);
@@ -91,9 +105,20 @@ public class ProductService implements iProductService {
                 .build();
 
         int size =productImageRepository.findAllByProductId(productId).size();
-        if(size >= 7){
-            throw new InvalidParamException("Cannot add more than 7 images");
+        if(size >= 5){
+            throw new InvalidParamException("Cannot add more than 5 images");
         }
         return productImageRepository.save(productImage);
     }
+
+    @Override
+    public List<Product> getProductByIds(List<Long> productIds) {
+       try{
+          return productRepository.getProductByIds(productIds);
+       }catch (Exception e){
+           throw new RuntimeException("Product not found");
+       }
+    }
+
+
 }

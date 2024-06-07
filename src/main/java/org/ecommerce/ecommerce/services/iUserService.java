@@ -8,4 +8,5 @@ public interface iUserService {
     User createUser(UserDTO userDto) throws Exception;
     String login (String phoneNumber, String password) throws DataNotFoundException;
 
+    User getUserDetailsFromToken(String token) throws Exception;
 }

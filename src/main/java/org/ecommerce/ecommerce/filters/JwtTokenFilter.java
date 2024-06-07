@@ -33,6 +33,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
+
            if(isByPassToken(request))
            {
                filterChain.doFilter(request,response);
@@ -70,6 +71,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(String.format("%s/users/register", apiPrefix), "POST"),
                 Pair.of(String.format("%s/users/login", apiPrefix), "POST"),
 //                Pair.of(String.format("%s/products", apiPrefix), "GET"),
+                Pair.of(String.format("%s/products/viewImages", apiPrefix), "GET"),
                 Pair.of(String.format("%s/categories", apiPrefix), "GET"),
                 Pair.of(String.format("%s/orders", apiPrefix), "GET"),
                 Pair.of(String.format("%s/roles", apiPrefix), "GET")

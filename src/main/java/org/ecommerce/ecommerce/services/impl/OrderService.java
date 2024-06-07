@@ -1,11 +1,11 @@
 package org.ecommerce.ecommerce.services.impl;
 
+import org.ecommerce.ecommerce.dtos.CartItemDTO;
 import org.ecommerce.ecommerce.dtos.OrderDTO;
 import org.ecommerce.ecommerce.exceptions.DataNotFoundException;
-import org.ecommerce.ecommerce.models.Order;
-import org.ecommerce.ecommerce.models.OrderStatus;
-import org.ecommerce.ecommerce.models.User;
+import org.ecommerce.ecommerce.models.*;
 import org.ecommerce.ecommerce.repository.OrderRepository;
+import org.ecommerce.ecommerce.repository.ProductRepository;
 import org.ecommerce.ecommerce.repository.UserRepository;
 import org.ecommerce.ecommerce.services.iOrderService;
 import org.modelmapper.ModelMapper;
@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class OrderService implements iOrderService {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public Order createOrder(OrderDTO orderDTO) throws DataNotFoundException {
@@ -44,6 +47,20 @@ public class OrderService implements iOrderService {
                 throw new DataNotFoundException("Data must be at least today");
             }
             order.setShippingDate(shippingDate);
+
+           List<CartItemDTO> cartItem = orderDTO.getCartItems();
+           List<OrderDetail> orderDetails = new ArrayList<>();
+           for (CartItemDTO Item:cartItem)
+           {
+               Product product = productRepository.findById(Item.getProductId()).orElseThrow(() -> new DataNotFoundException("Product not found"));
+                OrderDetail orderDetail = new OrderDetail();
+                orderDetail.setProduct(product);
+                orderDetail.setNumberOfProducts(Item.getQuantity());
+                orderDetail.setPrice(product.getPrice());
+                orderDetail.setOrder(order);
+                orderDetails.add(orderDetail);
+           }
+            order.setOrderDetails(orderDetails);
             orderRepository.save(order);
             return order;
 

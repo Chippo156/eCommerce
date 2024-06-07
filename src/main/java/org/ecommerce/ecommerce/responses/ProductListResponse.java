@@ -11,7 +11,6 @@ import java.util.List;
 @ToString
 @Builder
 public class ProductListResponse {
-
     private List<ProductResponse> productResponses;
     private int totalPage;
 }

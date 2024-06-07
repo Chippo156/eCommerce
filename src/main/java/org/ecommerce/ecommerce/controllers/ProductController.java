@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -133,7 +134,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProductById(id));
+        return ResponseEntity.ok(ProductResponse.fromProduct(productService.getProductById(id)));
     }
 
     @PostMapping("")
@@ -199,6 +200,19 @@ public class ProductController {
             }
         }
         return ResponseEntity.ok("Generate fake products successfully");
+    }
+
+    @GetMapping("/by-ids")
+    public ResponseEntity<?> getProductsByIds(@RequestParam("ids") String ids) {
+       try
+       {
+          List<Long> productIds = Arrays.stream(ids.split(",")).map(Long::parseLong).toList();
+          List<Product> products = productService.getProductByIds(productIds);
+          return ResponseEntity.ok(products);
+       }catch (Exception e)
+       {
+           return ResponseEntity.badRequest().body(e.getMessage());
+       }
     }
 }
 

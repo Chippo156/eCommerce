@@ -6,14 +6,12 @@ import org.ecommerce.ecommerce.dtos.UserLoginDTO;
 import org.ecommerce.ecommerce.models.User;
 import org.ecommerce.ecommerce.responses.LoginResponse;
 import org.ecommerce.ecommerce.responses.RegisterResponse;
+import org.ecommerce.ecommerce.responses.UserResponse;
 import org.ecommerce.ecommerce.services.impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -58,5 +56,15 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/details")
+    public ResponseEntity<?> getUserDetails(@RequestHeader("Authorization") String token) throws Exception {
+        try {
+            String extractedToken = token.substring(7);
+            User user = userService.getUserDetailsFromToken(extractedToken);
 
+            return ResponseEntity.ok(UserResponse.fromUser(user));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

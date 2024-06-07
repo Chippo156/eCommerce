@@ -22,9 +22,8 @@ public interface iProductService {
     Page<ProductResponse> getAllProducts(String keyword, Long categoryId, PageRequest pageRequest) throws DataNotFoundException;
 
     boolean existsByProductName(String productName);
-
     ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) throws DataNotFoundException, InvalidParamException;
-
+    List<Product> getProductByIds(List<Long> productIds);
 
 
 

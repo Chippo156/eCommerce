@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.ecommerce.ecommerce.models.Order;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -15,6 +16,8 @@ import java.util.Date;
 @ToString
 @Builder
 public class OrderResponse {
+    @JsonProperty("id")
+    private Long orderId;
     @JsonProperty("user_id")
     private Long userId;
     @JsonProperty("full_name")
@@ -25,23 +28,28 @@ public class OrderResponse {
     private String address;
     private String note;
     private String status;
+    @JsonProperty("order_date")
     private Date orderDate;
     @JsonProperty("total_money")
     private double totalMoney;
     @JsonProperty("shipping_method")
-
     private String shippingMethod;
     @JsonProperty("payment_method")
     private String paymentMethod;
     @JsonProperty("shipping_address")
     private String shippingAddress;
     @JsonProperty("shipping_date")
+    private LocalDate shipping_date;
+
+    @JsonProperty("tracking_number")
     private String trackingNumber;
-    private boolean active;
+
+
 
     public static OrderResponse fromOrder(Order order)
     {
         return OrderResponse.builder()
+                .orderId(order.getId())
                 .userId(order.getUser().getId())
                 .fullName(order.getFullName())
                 .email(order.getEmail())
@@ -55,7 +63,8 @@ public class OrderResponse {
                 .paymentMethod(order.getPaymentMethod())
                 .shippingAddress(order.getShippingAddress())
                 .trackingNumber(order.getTrackingNumber())
-                .active(order.isActive())
+                .shipping_date(order.getShippingDate())
+
                 .build();
     }
 
