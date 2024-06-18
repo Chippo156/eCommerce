@@ -40,14 +40,12 @@ export class RegisterComponent {
       date_of_birth: this.date_of_birth,
       facebook_account_id: 0,
       google_account_id: 0,
-      role_id: 1,
+      role_id: 2,
     };
     this.userSerrvice.register(registerDto).subscribe({
       next: (response: any) => {
-        if (
-          response !== null &&
-          (response.status === 200 || response.status === 201)
-        ) {
+        if (response !== null && response.Status === 200) {
+          alert('Register success');
           this.router.navigate(['/login']);
         } else {
           console.log('Register failed');

@@ -54,7 +54,11 @@ export class LoginComponent {
               role: response.role,
             };
             this.userService.saveUserResponseToLocalStorage(this.userResponse);
-            this.router.navigate(['/']);
+            if (this.userResponse.role.name === 'ADMIN') {
+              this.router.navigate(['/admin']);
+            } else {
+              this.router.navigate(['/']);
+            }
           },
           complete: () => {
             debugger;

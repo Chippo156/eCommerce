@@ -16,5 +16,6 @@ export interface OrderResponse {
   shipping_address: string;
   shipping_date: Date;
   tracking_number: string;
+  is_active: boolean;
   order_details: OrderDetail[];
 }

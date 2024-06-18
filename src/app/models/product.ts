@@ -1,5 +1,8 @@
+import { Color } from './colors';
+import { Comment } from './comment';
 import { ProductImage } from './product.image';
 import { Sale } from './sale';
+import { Size } from './sizes';
 
 export interface Product {
   id: number;
@@ -8,9 +11,11 @@ export interface Product {
   thumbnail: string;
   url: string;
   description: string;
-  size: string;
-  color: string;
+  created_at: Date;
   category_id: number;
   product_images: ProductImage[];
   product_sale: Sale;
+  comments: Comment[];
+  colors: Color[];
+  sizes: Size[];
 }

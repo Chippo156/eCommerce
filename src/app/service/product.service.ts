@@ -3,6 +3,7 @@ import { environtment } from '../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product } from '../models/product';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,13 @@ export class ProductService {
   private apiGetProducts = `${environtment.apiBaseUrl}/products`;
   products: Product[] = [];
   totalPages: number = 0;
-  constructor(private http: HttpClient) {}
+  currentPage: number = 0;
+  itemsPerPage: number = 12;
+
+  visiblePages: number[] = [];
+  keyword: string = '';
+  selectedCategoryId: number = 0;
+  constructor(private http: HttpClient, private router: Router) {}
   getProducts(
     keyword: string,
     category_id: number,
@@ -35,5 +42,10 @@ export class ProductService {
       params,
     });
   }
-  
+  getProductByCategoryId(categoryId: number): Observable<any> {
+    const params = new HttpParams().set('categoryId', categoryId.toString());
+    return this.http.get<Product[]>(`${this.apiGetProducts}/by-category`, {
+      params,
+    });
+  }
 }

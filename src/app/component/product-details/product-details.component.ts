@@ -20,10 +20,16 @@ import { environtment } from '../../environments/environment';
 import { Category } from '../../models/category';
 import { CartService } from '../../service/cart.service';
 import { ActivatedRoute, Route, Router } from '@angular/router';
+import { SoldProduct } from '../../responses/SoldProduct';
+import { OrderService } from '../../service/order.service';
+import { CommmentService } from '../../service/comment.service';
+import { Color } from '../../models/colors';
+import { style } from '@angular/animations';
+import { CommentImage } from '../../models/comment.image';
+import { Comment } from '../../models/comment';
 
 @Component({
   selector: 'app-product-details',
-
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
 })
@@ -31,12 +37,15 @@ export class ProductDetailsComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private cartService: CartService,
-    private router: ActivatedRoute
+    private router: ActivatedRoute,
+    private route: Router,
+    private orderService: OrderService,
+    private commentService: CommmentService
   ) {}
-
   productShowMore: Product[] = [];
+  productCheckColor: Product[] = [];
   checkShowMore: boolean = false;
-  product?: Product;
+  product!: Product;
   productId: number = 1;
   currentImageIndex: number = 0;
   quantity: number = 1;
@@ -44,17 +53,38 @@ export class ProductDetailsComponent implements OnInit {
   products: Product[] = [];
   categories: Category[] = [];
   currentPage: number = 0;
-  itemsPerPage: number = 6;
+  itemsPerPage: number = 8;
   totalPages: number = 0;
   visiblePages: number[] = [];
   keyword: string = '';
   selectedCategoryId: number = 0;
+  soldQuantity: SoldProduct[] = [];
+  listRating: Map<number, number> = new Map<number, number>();
+  priceSize: number = 0;
+  selectedSize: string = '';
+  selectedColor: string = '';
+  colors!: Color[];
+  checkInfor: string = 'des';
   ngOnInit() {
     debugger;
-
+    window.scrollTo(0, 0);
+    this.getProductDetails(0);
+    this.getProducts(
+      this.keyword,
+      this.selectedCategoryId,
+      this.currentPage,
+      this.itemsPerPage
+    );
+    this.getCountQuantityProduct();
+  }
+  getProductDetails(id: number) {
+    debugger;
     const idParam = this.router.snapshot.paramMap.get('id');
-    if (idParam !== null) {
-      this.productId = +idParam;
+    if (id !== 0) {
+      this.productId = id;
+    }
+    if (idParam !== null && id === 0) {
+      this.productId = parseInt(idParam!);
     }
     if (!isNaN(this.productId)) {
       this.productService.getProductDetails(this.productId).subscribe({
@@ -64,23 +94,43 @@ export class ProductDetailsComponent implements OnInit {
             response.product_images.forEach((product_images: ProductImage) => {
               product_images.image_url = `${environtment.apiBaseUrl}/products/viewImages/${product_images.image_url}`;
             });
-            if (response.product_sale === null) {
-              response.product_sale = {
+          }
+          if (response.product_sale === null) {
+            response.product_sale = {
+              id: 0,
+              description: '',
+              sale: 0,
+              newProduct: true,
+              startDate: new Date(),
+              endDate: new Date(),
+            };
+          }
+          if (response.sizes.length <= 0) {
+            response.sizes = [
+              {
                 id: 0,
-                description: '',
-                sale: 0,
-                newProduct: true,
-                startDate: new Date(),
-                endDate: new Date(),
-              };
-            }
+                size: 'M',
+                priceSize: 0,
+              },
+            ];
+          }
+          if (response.comments.length > 0) {
+            response.comments.forEach((comment: Comment) => {
+              comment.images.forEach((image: CommentImage) => {
+                image.imageUrl = `${environtment.apiBaseUrl}/comments/viewImages/${image.imageUrl}`;
+              });
+            });
           }
           debugger;
+          this.selectedSize = response.sizes[0].size;
+          this.selectedColor = response.colors[0].code;
           this.product = response;
           this.showImage(0);
         },
         complete: () => {
           debugger;
+          this.clickSize(this.selectedSize);
+          this.getProductByCategory(this.product.category_id);
         },
         error: (error) => {
           debugger;
@@ -90,12 +140,6 @@ export class ProductDetailsComponent implements OnInit {
     } else {
       console.log('Product ID is not a number', idParam);
     }
-    this.getProducts(
-      this.keyword,
-      this.selectedCategoryId,
-      this.currentPage,
-      this.itemsPerPage
-    );
   }
   showImage(index: number) {
     debugger;
@@ -158,12 +202,17 @@ export class ProductDetailsComponent implements OnInit {
                 endDate: new Date(),
               };
             }
+
+            let formattedNumber = product.price.toLocaleString('vi-VN');
+            product.price = parseFloat(formattedNumber);
           });
           this.products = response.productResponses;
           this.totalPages = response.totalPage;
         },
         complete: () => {
           debugger;
+          this.getRating();
+          this.checkInforProduct(this.checkInfor);
         },
         error: (error) => {
           debugger;
@@ -175,7 +224,11 @@ export class ProductDetailsComponent implements OnInit {
   addToCart() {
     debugger;
     if (this.product) {
-      this.cartService.addToCart(this.productId, this.quantity);
+      this.cartService.addToCart(
+        this.productId,
+        this.quantity,
+        this.selectedSize
+      );
     } else {
       console.log('Cannot add cart because product is not available');
     }
@@ -191,6 +244,126 @@ export class ProductDetailsComponent implements OnInit {
     this.productShowMore = this.products;
     this.checkShowMore = true;
   }
+  getProductDetail(productId: number) {
+    this.route.navigate(['/products', productId]);
+    setTimeout(() => {
+      this.getProductDetails(0);
+      window.scrollTo(0, 0);
+    }, 10);
+  }
+  getRating() {
+    this.products.forEach((product) => {
+      let rating = 0;
 
-  buyNow() {}
+      product.comments.forEach((comment) => {
+        rating += comment.rating;
+      });
+      this.listRating.set(product.id, rating / product.comments.length);
+      console.log(this.listRating);
+    });
+  }
+  getRatingProductId(productId: number): any[] {
+    const rating = this.listRating.get(productId) as number;
+
+    if (isNaN(rating) || rating === undefined) {
+      return Array(4);
+    }
+    return Array(Math.round(rating));
+  }
+  getCountQuantityProduct() {
+    this.orderService.countQuantityProductInOrder().subscribe({
+      next: (response: any) => {
+        debugger;
+        response.forEach((product: SoldProduct) => {
+          this.soldQuantity.push(product);
+        });
+      },
+      error: (error) => {
+        debugger;
+        console.log(error);
+      },
+    });
+  }
+  getSoldQuantity(productId: number): number {
+    const product = this.soldQuantity.find(
+      (product) => product.product.id === productId
+    );
+    if (product) {
+      return product.quantity;
+    }
+    return 0;
+  }
+  formatQuantity(quantity: number): string {
+    return quantity > 1000
+      ? (quantity / 1000).toFixed(1) + 'k'
+      : quantity.toString();
+  }
+  clickSize(size: string) {
+    debugger;
+    this.selectedSize = size;
+    this.priceSize = this.product.sizes.find((s) => s.size === size)!.priceSize;
+  }
+  clickColor(color: string) {
+    debugger;
+    this.selectedColor = color;
+  }
+  getProductByCategory(categoryId: number) {
+    this.productService.getProductByCategoryId(categoryId).subscribe({
+      next: (response: any) => {
+        this.productCheckColor = response.productResponses;
+        debugger;
+      },
+      complete: () => {
+        this.getColors();
+      },
+      error: (error) => {
+        debugger;
+        console.log(error);
+      },
+    });
+  }
+
+  getColors() {
+    debugger;
+    this.colors = [];
+    this.productCheckColor.forEach((product) => {
+      product.colors.forEach((color) => {
+        this.colors.push(color);
+      });
+    });
+  }
+  getProductByColor(selectedColor: string) {
+    debugger;
+    this.productCheckColor.forEach((product) => {
+      product.colors.forEach((color) => {
+        if (color.code === selectedColor) {
+          this.getProductDetails(product.id);
+        }
+      });
+    });
+  }
+  checkInforProduct(infor: string) {
+    const element1 = document.getElementById('des');
+    const element2 = document.getElementById('review');
+    const element3 = document.getElementById('infor');
+
+    if (infor === 'des') {
+      this.checkInfor = 'des';
+      element1?.classList.add('activeInfor');
+      element2?.classList.remove('activeInfor');
+      element3?.classList.remove('activeInfor');
+    }
+    if (infor === 'review') {
+      this.checkInfor = 'review';
+      element2?.classList.add('activeInfor');
+      element1?.classList.remove('activeInfor');
+      element3?.classList.remove('activeInfor');
+    }
+    if (infor === 'information') {
+      this.checkInfor = 'information';
+      element3?.classList.add('activeInfor');
+      element1?.classList.remove('activeInfor');
+      element2?.classList.remove('activeInfor');
+    }
+  }
 }

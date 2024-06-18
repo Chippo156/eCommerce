@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { BrowserModule } from '@angular/platform-browser';
@@ -11,4 +11,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
 })
-export class ContactComponent {}
+export class ContactComponent implements OnInit {
+  ngOnInit(): void {
+    window.scrollTo(0, 0);
+  }
+}

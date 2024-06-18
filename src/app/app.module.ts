@@ -8,7 +8,7 @@
 // import { HeaderComponent } from './component/header/header.component';
 // import { FooterComponent } from './component/footer/footer.component';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -27,15 +27,28 @@ import { RouterOutlet } from '@angular/router';
 import { AppComponent } from './app.component';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 import { CartDetailComponent } from './component/cart-detail/cart-detail.component';
+import { ProductService } from './service/product.service';
+import {
+  NgbPopover,
+  NgbPopoverConfig,
+  NgbPopoverModule,
+} from '@ng-bootstrap/ng-bootstrap';
+import { OrderAdminComponent } from './component/admin/order/order.admin.component';
+import { AdminComponent } from './component/admin/admin.component';
+import { CategoryAdminComponent } from './component/admin/category/category.admin';
+import { ProductAdminComponent } from './component/admin/product/product.component';
+import { OrderDetailsAdminComponent } from './component/admin/order/orderDetail/orderDetails.admin.component';
 @NgModule({
   imports: [
     BrowserModule,
-    AppRoutingModule,
-    CommonModule,
-    FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
+    CommonModule,
+    FormsModule,
     AppRoutingModule,
+    NgOptimizedImage,
+    NgbPopover,
+    NgbPopoverModule,
   ],
   declarations: [
     HomeComponent,
@@ -50,6 +63,11 @@ import { CartDetailComponent } from './component/cart-detail/cart-detail.compone
     BlogComponent,
     ContactComponent,
     AppComponent,
+    OrderAdminComponent,
+    AdminComponent,
+    CategoryAdminComponent,
+    ProductAdminComponent,
+    OrderDetailsAdminComponent,
   ],
   providers: [
     {
@@ -57,6 +75,7 @@ import { CartDetailComponent } from './component/cart-detail/cart-detail.compone
       useClass: TokenInterceptor,
       multi: true,
     },
+    [ProductService],
   ],
   bootstrap: [
     // CartDetailComponent,

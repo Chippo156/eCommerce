@@ -4,11 +4,21 @@ import { FooterComponent } from '../footer/footer.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Route, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  NavigationExtras,
+  Route,
+  Router,
+} from '@angular/router';
 import { ProductService } from '../../service/product.service';
 import { Product } from '../../models/product';
 import { Category } from '../../models/category';
 import { environtment } from '../../environments/environment';
+import { PaymentService } from '../../service/payment.service';
+import { CommmentService } from '../../service/comment.service';
+import { Comment } from '../../models/comment';
+import { OrderService } from '../../service/order.service';
+import { SoldProduct } from '../../responses/SoldProduct';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -27,20 +37,47 @@ export class HomeComponent implements OnInit {
   keyword: string = '';
   selectedCategoryId: number = 0;
   checkShowMore: boolean = false;
-
-  constructor(private router: Router, private productService: ProductService) {
-    this.selectedCategoryId = 2;
+  productId: number = 0;
+  soldQuantity: SoldProduct[] = [];
+  listRating: Map<number, number> = new Map<number, number>();
+  constructor(
+    private router: Router,
+    private productService: ProductService,
+    private paymentService: PaymentService,
+    private route: ActivatedRoute,
+    private commentService: CommmentService,
+    private orderService: OrderService
+  ) {
+    this.selectedCategoryId = 0;
     this.keyword = '';
   }
 
   ngOnInit(): void {
     debugger;
+    window.scrollTo(0, 0);
     this.getProducts(
       this.keyword,
       this.selectedCategoryId,
       this.currentPage,
       this.itemsPerPage
     );
+    this.route.queryParams.subscribe((params) => {
+      const paymentStatus = params['paymentStatus'];
+      if (paymentStatus === '00') {
+        alert('Thanh toán thành công');
+        this.clearPaymentStatus();
+      } else if (paymentStatus === '01') {
+        alert('Thanh toán thất bại');
+        this.clearPaymentStatus();
+      }
+    });
+    this.getCountQuantityProduct();
+  }
+  clearPaymentStatus() {
+    const navigationExtras: NavigationExtras = {
+      replaceUrl: true, // Replace the current URL in the history
+    };
+    this.router.navigate(['/'], navigationExtras);
   }
   getProducts(
     keyword: string,
@@ -71,6 +108,7 @@ export class HomeComponent implements OnInit {
         },
         complete: () => {
           debugger;
+          this.getRating();
         },
         error: (error) => {
           debugger;
@@ -87,5 +125,63 @@ export class HomeComponent implements OnInit {
     );
     this.productShowMore = this.products;
     this.checkShowMore = true;
+  }
+  onProductClick(productId: number) {
+    this.router.navigate(['/products', productId]);
+  }
+  searchProduct() {
+    this.getProducts(
+      this.keyword,
+      this.selectedCategoryId,
+      this.currentPage,
+      this.itemsPerPage
+    );
+  }
+  getRating() {
+    this.products.forEach((product) => {
+      let rating = 0;
+
+      product.comments.forEach((comment) => {
+        rating += comment.rating;
+      });
+      this.listRating.set(product.id, rating / product.comments.length);
+      console.log(this.listRating);
+    });
+  }
+  getRatingProductId(productId: number): any[] {
+    const rating = this.listRating.get(productId) as number;
+
+    if (isNaN(rating) || rating === undefined) {
+      return Array(4);
+    }
+    return Array(Math.round(rating));
+  }
+  getCountQuantityProduct() {
+    this.orderService.countQuantityProductInOrder().subscribe({
+      next: (response: any) => {
+        debugger;
+        response.forEach((product: SoldProduct) => {
+          this.soldQuantity.push(product);
+        });
+      },
+      error: (error) => {
+        debugger;
+        console.log(error);
+      },
+    });
+  }
+  getSoldQuantity(productId: number): number {
+    const product = this.soldQuantity.find(
+      (product) => product.product.id === productId
+    );
+    if (product) {
+      return product.quantity;
+    }
+    return 0;
+  }
+  formatQuantity(quantity: number): string {
+    return quantity > 1000
+      ? (quantity / 1000).toFixed(1) + 'k'
+      : quantity.toString();
   }
 }

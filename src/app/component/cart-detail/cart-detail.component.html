@@ -9,19 +9,27 @@
     </div>
   </div>
 </section>
-<main *ngIf="isCartEmpty()">
+<main *ngIf="isCartEmpty()" style="background-color: #f5f5f5">
   <section>
     <div class="checkout-address container">
       <h4><i class="fa-solid fa-location-dot"></i> Địa chỉ nhận hàng</h4>
       <div class="address d-flex">
         <div>
-          <b>Nguyễn Văn A (+84) 393197895</b>
+          <b
+            >{{ userNameRef.nativeElement.textContent }} (+84)
+            {{ phoneNumberRef.nativeElement.textContent }}</b
+          >
           <p>
-            Lô G11, Đường D5, Kdc Lai Hưng, Xã Lai Hưng, Huyện Bàu Bàng, Bình
-            Dương
+            {{ addressRef.nativeElement.textContent }}
           </p>
         </div>
-        <button class="btn">Change</button>
+        <button
+          class="btn"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
+        >
+          Change
+        </button>
       </div>
     </div>
   </section>
@@ -33,38 +41,55 @@
             <img class="img-cart" [src]="item.product.url" alt="" />
           </td>
           <td>{{ item.product.name }}</td>
-          <td>Rs. {{ item.product.price }}</td>
+          <td>{{ item.product.price.toLocaleString("vi-VN") }}₫</td>
           <td>{{ item.quantity }}</td>
-          <td>Rs. {{ totalMoney }}</td>
+          <td>
+            {{ (item.product.price * item.quantity).toLocaleString("vi-VN") }}₫
+          </td>
           <div class="mt-5"></div>
-          <div class="voucher">
-            <div class="shop-technical">
-              <div>Hóa đơn điện tử <i class="fa-solid fa-question"></i></div>
-              <a href="">Yêu cầu ngay</a>
-            </div>
-            <div class="shop-voucher">
-              <h4><i class="fa-solid fa-gift"></i> Voucher</h4>
-              <div class="">
-                <input type="text" placeholder="Enter your code" />
-                <button class="btn">Apply</button>
+          <div class="order-details">
+            <div class="voucher">
+              <div class="shop-technical">
+                <div>Hóa đơn điện tử <i class="fa-solid fa-question"></i></div>
+                <a href="">Yêu cầu ngay</a>
+              </div>
+              <div class="shop-voucher">
+                <h4><i class="fa-solid fa-gift"></i> Voucher</h4>
+                <div class="d-flex align-items-center">
+                  <input
+                    type="text"
+                    placeholder="Enter your code"
+                    class="form-control"
+                  />
+                  <button class="btn">Apply</button>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="mt-5"></div>
-          <div class="shipping-method">
-            <div class="message">
-              <label for="#" class="">Lời nhắn :</label>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Lời nhắn cho Người bán.."
-              />
+            <div class="mt-5"></div>
+            <div class="shipping-method">
+              <div class="message">
+                <div for="#" class="form-check-label" style="width: 120px">
+                  Lời nhắn :
+                </div>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Lời nhắn cho Người bán.."
+                />
+              </div>
+              <div class="total">
+                <p>
+                  <span
+                    >Tổng số tiền({{ item.quantity }} sản phẩm):
+                    {{
+                      (item.product.price * item.quantity).toLocaleString(
+                        "vi-VN"
+                      )
+                    }}₫</span
+                  >
+                </p>
+              </div>
             </div>
-          </div>
-          <div class="total">
-            <p>
-              <span>Tổng số tiền(1 sản phẩm): {{ totalMoney }}</span>
-            </p>
           </div>
         </div>
       </table>
@@ -73,22 +98,50 @@
   <section class="container my-4">
     <div class="order-voucher d-flex justify-content-between">
       <h4><i class="fa-solid fa-gift"></i> Voucher</h4>
-      <div class="">
-        <input type="text" placeholder="Enter your code" />
-        <button class="btn">Apply</button>
+      <div class="d-flex align-items-center">
+        <input
+          type="text"
+          placeholder="Enter your code"
+          class="form-control"
+          [(ngModel)]="couponCode"
+        />
+        <button
+          class="btn"
+          (click)="CalculateCoupon()"
+          (blur)="extractCoupon()"
+        >
+          Apply
+        </button>
       </div>
     </div>
   </section>
+  <div class="separate container"></div>
   <section>
     <div class="payment-method container d-flex justify-content-between">
       <h4><i class="fa-solid fa-credit-card"></i> Phương thức thanh toán</h4>
-      <div class="payment-method-item">
-        <input type="radio" name="payment" id="payment1" />
-        <label for="payment1">Thanh toán khi nhận hàng</label>
+      <div class="payment-method-item d-flex align-items-center gap-5">
+        <div>
+          <label
+            for="payment1"
+            class="text-primary"
+            *ngIf="selectedPayment === ''"
+            >Thanh toán khi nhận hàng</label
+          >
+          <label for="payment1" class="text-primary">{{
+            selectedPayment
+          }}</label>
+        </div>
+        <button
+          class="btn"
+          data-bs-toggle="modal"
+          data-bs-target="#modal_paymentMethod"
+        >
+          Change
+        </button>
       </div>
-      <div class="change">THAY ĐỔI</div>
     </div>
   </section>
+  <div class="separate container"></div>
   <section class="container my-5">
     <div class="transport d-flex justify-content-between">
       <h5><i class="fa-solid fa-truck"></i> Phương thức vận chuyển</h5>
@@ -103,7 +156,7 @@
             (change)="onChangeTransport()"
           />
           <label for="transport1">Giao hàng tiêu chuẩn</label>
-          <p>Phí vận chuyển: 20.000đ</p>
+          <p>Phí vận chuyển: 20.000₫</p>
         </div>
         <div class="transport-item">
           <input
@@ -115,7 +168,7 @@
             (change)="onChangeTransport()"
           />
           <label for="transport2">Giao hàng nhanh</label>
-          <p>Phí vận chuyển: 30.000đ</p>
+          <p>Phí vận chuyển: 30.000₫</p>
         </div>
       </div>
     </div>
@@ -125,7 +178,7 @@
       <table>
         <tr>
           <td>Tổng tiền hàng</td>
-          <td>25.627.600đ</td>
+          <td>{{ totalMoney.toLocaleString("vi-VN") }}₫</td>
         </tr>
         <tr>
           <td>Phí vận chuyển</td>
@@ -133,20 +186,39 @@
         </tr>
         <tr>
           <td>Tổng cộng Voucher giảm giá</td>
-          <td>0đ</td>
+          <td>{{ discount }}₫</td>
         </tr>
         <tr>
           <td>Tổng thanh toán</td>
-          <td class="text-danger" style="font-size: 24px">25.647.600đ</td>
+          <td class="text-danger" style="font-size: 24px">
+            {{ totalMoney.toLocaleString("vi-VN") }}₫
+          </td>
         </tr>
       </table>
     </div>
   </section>
-  <div class="container d-flex justify-content-end mt-3">
+
+  <div
+    class="container d-flex justify-content-end mt-3"
+    *ngIf="selectedPayment === 'Thanh toán khi nhận hàng'"
+  >
     <button class="btn btn-primary" (click)="placeOrder()">Đặt hàng</button>
   </div>
+  <div
+    class="container d-flex justify-content-end mt-3"
+    *ngIf="selectedPayment === 'Thanh toán qua thẻ'"
+  >
+    <button class="btn btn-primary" (click)="placeOrder()">Thanh toan</button>
+  </div>
 </main>
-<!-- <div
+<div
+  class="d-flex justify-content-center align-items-center"
+  style="width: 100%; height: 50vh; font-size: 20px; font-weight: bold"
+  *ngIf="!isCartEmpty()"
+>
+  Chưa có sản phẩm trong giỏ hàng !!
+</div>
+<div
   class="modal fade"
   id="exampleModal"
   tabindex="-1"
@@ -156,7 +228,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <p class="modal-title" id="exampleModalLabel">Shopping Cart</p>
+        <p class="modal-title" id="exampleModalLabel">Địa chỉ của tôi</p>
         <button
           type="button"
           class="btn-close"
@@ -165,29 +237,103 @@
         ></button>
       </div>
       <div class="modal-body">
-        <div class="product-cart">
-          <div class="product-cart-item">
-            <img class="product-image" alt="" />
-            <div class="product-cart-infor">
-              <h4></h4>
-              <span class="product-quantity fs-4"><b></b></span>
-
-              <p class="d-inline mx-3 fs-3 product-price">x</p>
+        <div class="shipping-address">
+          <div
+            class="shipping-address_item d-flex align-items-start justify-content-between gap-5"
+            *ngFor="let item of address; let i = index"
+          >
+            <input
+              type="radio"
+              class="form-check-input"
+              name="shipping"
+              (change)="onChangeShippingAddress()"
+              value="{{ selectedAddress }}"
+              [(ngModel)]="selectedAddress"
+            />
+            <div class="address-infor">
+              <div class="user-infor">
+                <b #userNameRef>Nguyễn Văn A</b> |
+                <span class="text-lighter" #phoneNumberRef>0393197895</span>
+              </div>
+              <div class="address" name="address" #addressRef>
+                {{ item }}
+              </div>
             </div>
+            <a href="#" class="nav-link text-primary">Update</a>
           </div>
-        </div>
-        <div class="d-flex mt-3">
-          <p class="fs-3" style="margin-right: 100px">Subtotal:</p>
-          <p class="price-total fs-3"></p>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn" data-bs-dismiss="modal">Cart</button>
-        <button type="button" class="btn">Checkout</button>
-        <button type="button" class="btn">Comparison</button>
+        <button type="button" class="btn" data-bs-dismiss="modal">Hủy</button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="onChangeShippingAddress()"
+          data-bs-dismiss="modal"
+        >
+          Xác nhận
+        </button>
       </div>
     </div>
   </div>
-</div> -->
+</div>
+<div
+  class="modal fade"
+  id="modal_paymentMethod"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="modal-title" id="exampleModalLabel">Phương thức thanh toán</p>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="payment-method">
+          <div class="payment-method-item">
+            <input
+              type="radio"
+              name="payment"
+              id="payment1"
+              class="form-check-input mx-3"
+              [(ngModel)]="selectedPayment"
+              value="Thanh toán khi nhận hàng"
+            />
+            <label for="payment1">Thanh toán khi nhận hàng</label>
+          </div>
+          <div class="payment-method-item">
+            <input
+              type="radio"
+              name="payment"
+              id="payment2"
+              class="form-check-input mx-3"
+              [(ngModel)]="selectedPayment"
+              value="Thanh toán qua thẻ"
+            />
+            <label for="payment2">Thanh toán qua thẻ</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn" data-bs-dismiss="modal">Hủy</button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="onChangeShippingAddress()"
+          data-bs-dismiss="modal"
+        >
+          Xác nhận
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <app-footer></app-footer>
