@@ -6,6 +6,8 @@ import org.ecommerce.ecommerce.models.Category;
 import org.ecommerce.ecommerce.repository.CategoryRepository;
 import org.ecommerce.ecommerce.services.iCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +23,8 @@ public class CategoryService implements iCategoryService {
     }
 
     @Override
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public Page<Category> getAllCategories(String keyword, Pageable pageable) {
+        return categoryRepository.getAllCategories(keyword, pageable);
     }
 
 

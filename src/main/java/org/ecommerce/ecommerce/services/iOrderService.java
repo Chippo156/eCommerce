@@ -3,6 +3,9 @@ package org.ecommerce.ecommerce.services;
 import org.ecommerce.ecommerce.dtos.OrderDTO;
 import org.ecommerce.ecommerce.exceptions.DataNotFoundException;
 import org.ecommerce.ecommerce.models.Order;
+import org.ecommerce.ecommerce.responses.OrderResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -13,6 +16,8 @@ public interface iOrderService {
     void deleteOrder(Long orderId);
 
     List<Order> getOrdersByUserId(Long userId);
+
+    Page<OrderResponse> getAllOrders(String keyword, Pageable pageable);
 
 
 }

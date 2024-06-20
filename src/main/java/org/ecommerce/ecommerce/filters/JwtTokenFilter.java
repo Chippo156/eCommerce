@@ -47,8 +47,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
            }
            final String token = authenticationHeader.substring(7);
            final String phoneNumber = jwtTokenUtils.extractPhoneNumber(token);
-           if(phoneNumber != null
-           && SecurityContextHolder.getContext().getAuthentication() == null)
+           if(phoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null)
            {
                User userDetails = (User) userDetailsService.loadUserByUsername(phoneNumber);
                if(jwtTokenUtils.validateToken(token,userDetails))
@@ -65,17 +64,42 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
-
     private boolean isByPassToken(@NotNull HttpServletRequest request) {
         final List<Pair<String, String>> byPassTokens = Arrays.asList(
                 Pair.of(String.format("%s/users/register", apiPrefix), "POST"),
                 Pair.of(String.format("%s/users/login", apiPrefix), "POST"),
-//                Pair.of(String.format("%s/products", apiPrefix), "GET"),
-                Pair.of(String.format("%s/products/viewImages", apiPrefix), "GET"),
-                Pair.of(String.format("%s/categories", apiPrefix), "GET"),
-                Pair.of(String.format("%s/orders", apiPrefix), "GET"),
-                Pair.of(String.format("%s/roles", apiPrefix), "GET")
+                Pair.of(String.format("%s/roles", apiPrefix), "GET"),
+                Pair.of(String.format("%s/coupons", apiPrefix), "GET"),
+                Pair.of(String.format("%s/comments", apiPrefix), "GET")
+
         );
+        String path = request.getServletPath();
+        String method = request.getMethod();
+        if (path.equals(String.format("%s/orders", apiPrefix))
+                && method.equals("GET")) {
+            // Allow access to %s/orders
+            return true;
+        }
+        if (path.equals(String.format("%s/categories", apiPrefix))
+                && method.equals("GET")) {
+            // Allow access to %s/orders
+            return true;
+        }
+        if (path.contains(String.format("%s/products", apiPrefix))
+                && method.equals("GET")) {
+            // Allow access to %s/orders
+            return true;
+        }
+        if (path.contains(String.format("%s/products/viewImages", apiPrefix))
+                && method.equals("GET")) {
+            // Allow access to %s/orders
+            return true;
+        }
+        if (path.contains(String.format("%s/payment", apiPrefix))
+                && method.equals("GET")) {
+            // Allow access to %s/orders
+            return true;
+        }
         for (Pair<String, String> byPassToken : byPassTokens) {
             if (request.getServletPath().contains(byPassToken.getFirst()) && request.getMethod().equals(byPassToken.getSecond())) {
                 return true;

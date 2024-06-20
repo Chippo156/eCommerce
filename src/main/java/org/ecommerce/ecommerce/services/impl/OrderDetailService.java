@@ -8,12 +8,15 @@ import org.ecommerce.ecommerce.models.Product;
 import org.ecommerce.ecommerce.repository.OrderDetailRepository;
 import org.ecommerce.ecommerce.repository.OrderRepository;
 import org.ecommerce.ecommerce.repository.ProductRepository;
+import org.ecommerce.ecommerce.responses.OrderDetaiResponse;
 import org.ecommerce.ecommerce.services.iOrderDetailService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderDetailService implements iOrderDetailService {
@@ -68,7 +71,16 @@ public class OrderDetailService implements iOrderDetailService {
     }
 
     @Override
-    public List<OrderDetail> findByOrderId(Long orderId) {
-        return orderDetailRepository.findByOrderId(orderId);
+    public List<OrderDetaiResponse> findByOrderId(Long orderId) {
+        return orderDetailRepository.findByOrderId(orderId).stream().map(OrderDetaiResponse::fromOrderDetail).toList();
+    }
+
+    @Override
+    public Map<Long, Integer> countNumberOfProduct() {
+        List<Object[]> objects = orderDetailRepository.countNumberOfProduct();
+        return objects.stream().collect(Collectors.toMap(
+                object -> Long.parseLong(object[0].toString()),
+                object -> Integer.parseInt(object[1].toString())
+        ));
     }
 }

@@ -4,6 +4,7 @@ import org.ecommerce.ecommerce.dtos.ProductDTO;
 import org.ecommerce.ecommerce.dtos.ProductImageDTO;
 import org.ecommerce.ecommerce.exceptions.DataNotFoundException;
 import org.ecommerce.ecommerce.exceptions.InvalidParamException;
+import org.ecommerce.ecommerce.models.Color;
 import org.ecommerce.ecommerce.models.Product;
 import org.ecommerce.ecommerce.models.ProductImage;
 import org.ecommerce.ecommerce.responses.ProductResponse;
@@ -23,8 +24,10 @@ public interface iProductService {
 
     boolean existsByProductName(String productName);
     ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) throws DataNotFoundException, InvalidParamException;
-    List<Product> getProductByIds(List<Long> productIds);
+    List<ProductResponse> getProductByIds(List<Long> productIds);
 
+    List<ProductResponse> getProductsByCategoryId(Long categoryId);
 
+    List<ProductResponse> getProductsByCategoryName(String categoryName);
 
 }

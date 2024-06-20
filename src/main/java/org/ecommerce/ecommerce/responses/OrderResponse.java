@@ -40,9 +40,10 @@ public class OrderResponse {
     private String shippingAddress;
     @JsonProperty("shipping_date")
     private LocalDate shipping_date;
-
     @JsonProperty("tracking_number")
     private String trackingNumber;
+    @JsonProperty("is_active")
+    private boolean active;
 
 
 
@@ -64,7 +65,7 @@ public class OrderResponse {
                 .shippingAddress(order.getShippingAddress())
                 .trackingNumber(order.getTrackingNumber())
                 .shipping_date(order.getShippingDate())
-
+                .active(order.isActive())
                 .build();
     }
 

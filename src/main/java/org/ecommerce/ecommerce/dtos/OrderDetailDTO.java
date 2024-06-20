@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class OrderDetailDTO {
     @JsonProperty("product_id")
     @Min(value = 1, message = "Product id must be greater than 0")

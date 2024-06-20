@@ -25,10 +25,6 @@ public class Product extends BaseEntity{
     private String thumbnail;
     @Column(name = "description")
     private String description;
-    @Column(name = "size",length = 20)
-    private String size;
-    @Column(name = "color",length = 20)
-    private String color;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -38,4 +34,14 @@ public class Product extends BaseEntity{
 
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<ProductImage> productImages;
+
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<ProductSize> productSizes;
+
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<Color> colors;
+
 }

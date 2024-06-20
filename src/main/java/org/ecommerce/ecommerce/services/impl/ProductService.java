@@ -4,10 +4,7 @@ import org.ecommerce.ecommerce.dtos.ProductDTO;
 import org.ecommerce.ecommerce.dtos.ProductImageDTO;
 import org.ecommerce.ecommerce.exceptions.DataNotFoundException;
 import org.ecommerce.ecommerce.exceptions.InvalidParamException;
-import org.ecommerce.ecommerce.models.Category;
-import org.ecommerce.ecommerce.models.Product;
-import org.ecommerce.ecommerce.models.ProductImage;
-import org.ecommerce.ecommerce.models.ProductSale;
+import org.ecommerce.ecommerce.models.*;
 import org.ecommerce.ecommerce.repository.CategoryRepository;
 import org.ecommerce.ecommerce.repository.ProductImageRepository;
 import org.ecommerce.ecommerce.repository.ProductRepository;
@@ -33,6 +30,7 @@ public class ProductService implements iProductService {
     private ProductImageRepository productImageRepository;
     @Autowired
     private ProductSaleRepository productSaleRepository;
+
     @Override
     public Product createProduct(ProductDTO productDTO) throws DataNotFoundException {
         Category category = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(()
@@ -45,8 +43,6 @@ public class ProductService implements iProductService {
                 .price(productDTO.getPrice())
                 .description(productDTO.getDescription())
                 .thumbnail(productDTO.getThumbnail())
-                .color(productDTO.getColor())
-                .size(productDTO.getSize())
                 .category(category)
                 .sale(productSale)
                 .build();
@@ -59,16 +55,25 @@ public class ProductService implements iProductService {
         try {
             Product product = productRepository.findById(productId).orElseThrow(() -> new Exception("Cannot find product with id: " + productId));
             product.setName(productDTO.getProductName());
+
             product.setPrice(productDTO.getPrice());
-            product.setDescription(productDTO.getDescription());
-            product.setThumbnail(productDTO.getThumbnail());
-            product.setColor(productDTO.getColor());
-            product.setSize(productDTO.getSize());
-            Category category = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(() -> new DataNotFoundException("Cannot find category with id: " + productDTO.getCategoryId()));
-            product.setCategory(category);
-            ProductSale productSale = productSaleRepository.findById(productDTO.getSaleId()).orElseThrow(()
-                    -> new DataNotFoundException("Cannot find sale with id: " + productDTO.getSaleId()));
-            product.setSale(productSale);
+            if(productDTO.getDescription() != null){
+            product.setDescription(productDTO.getDescription());}
+            if (productDTO.getThumbnail() != null) {
+                product.setThumbnail(productDTO.getThumbnail());
+            }
+
+
+
+            if(productDTO.getCategoryId() != null) {
+                Category category = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(() -> new DataNotFoundException("Cannot find category with id: " + productDTO.getCategoryId()));
+                product.setCategory(category);
+            }
+            if(productDTO.getSaleId() != null) {
+                ProductSale productSale = productSaleRepository.findById(productDTO.getSaleId()).orElseThrow(()
+                        -> new DataNotFoundException("Cannot find sale with id: " + productDTO.getSaleId()));
+                product.setSale(productSale);
+            }
             return productRepository.save(product);
         } catch (Exception e) {
             throw new DataNotFoundException("Cannot find product with id: " + productId);
@@ -104,21 +109,29 @@ public class ProductService implements iProductService {
                 .image_url(productImageDTO.getImage_url())
                 .build();
 
-        int size =productImageRepository.findAllByProductId(productId).size();
-        if(size >= 5){
+        int size = productImageRepository.findAllByProductId(productId).size();
+        if (size >= 5) {
             throw new InvalidParamException("Cannot add more than 5 images");
         }
         return productImageRepository.save(productImage);
     }
 
     @Override
-    public List<Product> getProductByIds(List<Long> productIds) {
-       try{
-          return productRepository.getProductByIds(productIds);
-       }catch (Exception e){
-           throw new RuntimeException("Product not found");
-       }
+    public List<ProductResponse> getProductByIds(List<Long> productIds) {
+        try {
+            return productRepository.getProductByIds(productIds).stream().map(ProductResponse::fromProduct).toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Product not found");
+        }
     }
 
+    @Override
+    public List<ProductResponse> getProductsByCategoryId(Long categoryId) {
+       return productRepository.findAllByCategoryId(categoryId).stream().map(ProductResponse::fromProduct).toList();
+    }
 
+    @Override
+    public List<ProductResponse> getProductsByCategoryName(String categoryName) {
+        return productRepository.findAllByCategoryName(categoryName).stream().map(ProductResponse::fromProduct).toList();
+    }
 }

@@ -4,8 +4,10 @@ import org.ecommerce.ecommerce.dtos.OrderDetailDTO;
 import org.ecommerce.ecommerce.exceptions.DataNotFoundException;
 import org.ecommerce.ecommerce.models.Order;
 import org.ecommerce.ecommerce.models.OrderDetail;
+import org.ecommerce.ecommerce.responses.OrderDetaiResponse;
 
 import java.util.List;
+import java.util.Map;
 
 public interface iOrderDetailService {
 
@@ -17,7 +19,9 @@ public interface iOrderDetailService {
 
     void deleteOrderDetail(Long orderDetailId) throws DataNotFoundException;
 
-    List<OrderDetail> findByOrderId(Long orderId);
+    List<OrderDetaiResponse> findByOrderId(Long orderId);
+
+    Map<Long,Integer> countNumberOfProduct();
 
 
 

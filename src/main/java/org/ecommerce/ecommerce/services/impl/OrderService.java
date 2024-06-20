@@ -7,9 +7,12 @@ import org.ecommerce.ecommerce.models.*;
 import org.ecommerce.ecommerce.repository.OrderRepository;
 import org.ecommerce.ecommerce.repository.ProductRepository;
 import org.ecommerce.ecommerce.repository.UserRepository;
+import org.ecommerce.ecommerce.responses.OrderResponse;
 import org.ecommerce.ecommerce.services.iOrderService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -96,5 +99,10 @@ public class OrderService implements iOrderService {
     @Override
     public List<Order> getOrdersByUserId(Long userId) {
         return orderRepository.findOrderByUserId(userId);
+    }
+
+    @Override
+    public Page<OrderResponse> getAllOrders(String keyword, Pageable pageable) {
+        return orderRepository.getAllOrders(keyword, pageable).map(OrderResponse::fromOrder);
     }
 }

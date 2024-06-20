@@ -40,17 +40,89 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.GET,
                                     String.format("%s/products**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.GET,
-                            String.format("%s/products/by-ids**", apiPrefix)).permitAll()
+                                    String.format("%s/products/by-category**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/products/by-category-name**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/products/by-ids**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.GET,
                                     String.format("%s/products/viewImages/**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.POST,
+                                    String.format("%s/products/uploadImages/**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.GET,
-                                    String.format("%s/products", apiPrefix)).permitAll()
+                                    String.format("%s/products/**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.POST,
+                                    String.format("%s/products/**", apiPrefix)).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT,
+                                    String.format("%s/products/**", apiPrefix)).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.DELETE,
+                                    String.format("%s/products/**", apiPrefix)).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.POST,
+                                    String.format("%s/products/fakeProducts", apiPrefix)).permitAll()
+
                             .requestMatchers(HttpMethod.POST,
                                     String.format("%s/orders", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.POST,
+                                    String.format("%s/orders/user/**", apiPrefix)).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.GET,
-                                    String.format("%s/orders**", apiPrefix)).permitAll()
-                            .anyRequest().authenticated();
+                                    String.format("%s/orders**", apiPrefix)).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT,
+                                    String.format("%s/orders/**", apiPrefix)).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.DELETE,
+                                    String.format("%s/orders/**", apiPrefix)).hasAnyRole("ADMIN")
 
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/categories", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/categories**", apiPrefix)).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.POST,
+                                    String.format("%s/categories", apiPrefix)).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT,
+                                    String.format("%s/categories/**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.DELETE,
+                                    String.format("%s/categories/**", apiPrefix)).hasAnyRole("ADMIN")
+
+                            .requestMatchers(HttpMethod.POST,
+                                    String.format("%s/orders", apiPrefix)).hasAnyRole("USER")
+                            .requestMatchers(HttpMethod.PUT,
+                                    String.format("%s/categories/**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.DELETE,
+                                    String.format("%s/categories/**", apiPrefix)).permitAll()
+
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/order-details/**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/order-details/orders/**", apiPrefix)).permitAll()
+//                            .requestMatchers(HttpMethod.POST,
+//                                    String.format("%s/order-details/**", apiPrefix)).hasAnyRole("USER")
+                            .requestMatchers(HttpMethod.PUT,
+                                    String.format("%s/order-details/**", apiPrefix)).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.DELETE,
+                                    String.format("%s/order-details/**", apiPrefix)).hasAnyRole("ADMIN")
+                            .requestMatchers(HttpMethod.POST,
+                                    String.format("%s/order-details/fakeOrderDetail", apiPrefix)).permitAll()
+
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/payment/vn-pay**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/payment/vnpay-callback**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/coupons/code/**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/comments/count", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.POST,
+                                    String.format("%s/comments", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.POST,
+                                    String.format("%s/comments/fakeComment", apiPrefix)).permitAll()
+
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/comments/viewImages/**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.POST,
+                                    String.format("%s/comments/uploadImages/**", apiPrefix)).permitAll()
+
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/colors/codes", apiPrefix)).permitAll()
+                            .anyRequest().authenticated();
                 })
                 .csrf(AbstractHttpConfigurer::disable);
         http.cors(new Customizer<CorsConfigurer<HttpSecurity>>() {
@@ -58,7 +130,7 @@ public class WebSecurityConfig {
             public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.setAllowedOrigins(List.of("*"));
-                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","PATCH","OPTIONS"));
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                 configuration.setAllowedHeaders(Arrays.asList("authorization", "x-auth-token", "content-type"));
                 configuration.setExposedHeaders(List.of("x-auth-token"));
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

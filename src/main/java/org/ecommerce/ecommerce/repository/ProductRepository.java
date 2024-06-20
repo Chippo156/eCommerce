@@ -1,5 +1,6 @@
 package org.ecommerce.ecommerce.repository;
 
+import org.ecommerce.ecommerce.models.Color;
 import org.ecommerce.ecommerce.models.Product;
 import org.ecommerce.ecommerce.responses.ProductResponse;
 import org.springframework.data.domain.Page;
@@ -22,5 +23,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p from Product p where p.id IN :productIds")
     List<Product> getProductByIds(@Param("productIds") List<Long> productIds);
+
+    List<Product> findAllByCategoryId(Long category_id);
+    @Query("SELECT c FROM Product c WHERE LOWER(c.name) LIKE CONCAT('%', LOWER(:category_name), '%')")
+    List<Product> findAllByCategoryName(@Param("category_name") String category_name);
 
 }
