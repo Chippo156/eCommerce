@@ -125,8 +125,7 @@ input {
   text-align: center;
 }
 .btn {
-  border: 3px solid #9f9f9f;
-  background-color: #fff;
+  border: 1px solid #9f9f9f;
   padding: 5px 30px;
   font-weight: bold;
 }
@@ -261,11 +260,40 @@ input {
 .activeInfor {
   color: #000;
   font-weight: bold;
-  padding: 8px 10px;
-  border-radius: 10px;
+
   background-color: #f3f3f3;
 }
 .user {
   display: flex;
   align-items: center;
+}
+.btn-add {
+  background-color: #27678f;
+  color: white;
+  background-size: 200% auto;
+  transition: background-position 0.7s;
+  background-image: linear-gradient(to right, #27678f 50%, white 50%);
+}
+.btn-add:hover {
+  background-position: right center;
+  color: #000;
+  border: 1px solid #27678f;
+}
+
+.btn-buyNow {
+  background-color: #ef683a;
+  color: white;
+  background-size: 200% auto;
+  transition: background-position 0.7s;
+  background-image: linear-gradient(to right, #ef683a 50%, white 50%);
+}
+.btn-buyNow:hover {
+  background-position: right center;
+  color: #000;
+  border: 1px solid #ef683a;
+}
+.product-reviews {
+  border-bottom: 1px solid black;
+  padding: 0;
+  margin: 0;
 }

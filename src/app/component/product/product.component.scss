@@ -27,7 +27,6 @@
 .search-left {
   display: flex;
   align-items: center;
-  gap: 40px;
 }
 .search-right {
   display: flex;
@@ -61,8 +60,24 @@
   position: relative;
   border-radius: 5px;
   margin-bottom: 30px;
-  width: 100%;
   cursor: pointer;
+}
+.col-lg-3,
+.col-md-6 {
+  flex: 1 1 calc(25% - 16px); /* Chiều rộng cho col-lg-3 với khoảng cách */
+  box-sizing: border-box;
+}
+
+@media (max-width: 992px) {
+  .col-lg-3 {
+    flex: 1 1 calc(50% - 16px); /* Chiều rộng cho col-md-6 với khoảng cách */
+  }
+}
+
+@media (max-width: 768px) {
+  .col-md-6 {
+    flex: 1 1 100%; /* Chiều rộng cho màn hình nhỏ */
+  }
 }
 .product-infor {
   background-color: #f4f5f7;
@@ -188,8 +203,53 @@
 .color {
   padding: 10px;
   border-radius: 50%;
+  border: 1px solid #000;
 }
 .color:hover {
   outline: none;
-  border: 1px solid #000;
+  transform: scale(1.05);
+}
+.filter {
+  width: 200px;
+  position: relative;
+  background-color: #fff;
+}
+.filter-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+}
+.menu-filter {
+  display: none;
+  width: 100%;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px #e0e0e0;
+  position: absolute;
+  top: 40px;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.filter:hover .menu-filter {
+  display: block;
+}
+.visible {
+  display: block;
+}
+.hide {
+  display: none;
 }

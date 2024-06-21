@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class ProductService {
   private apiGetProducts = `${environtment.apiBaseUrl}/products`;
+  private apiGetColors = `${environtment.apiBaseUrl}/colors`;
   products: Product[] = [];
   totalPages: number = 0;
   currentPage: number = 0;
@@ -47,5 +48,14 @@ export class ProductService {
     return this.http.get<Product[]>(`${this.apiGetProducts}/by-category`, {
       params,
     });
+  }
+  getProductByCategoryName(categoryName: string): Observable<any> {
+    const params = new HttpParams().set('categoryName', categoryName);
+    return this.http.get<Product[]>(`${this.apiGetProducts}/by-category-name`, {
+      params,
+    });
+  }
+  getCodeColors(): Observable<any> {
+    return this.http.get(`${this.apiGetColors}/codes`);
   }
 }

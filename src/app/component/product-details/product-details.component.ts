@@ -191,7 +191,15 @@ export class ProductDetailsComponent implements OnInit {
         next: (response: any) => {
           debugger;
           response.productResponses.forEach((product: Product) => {
-            product.url = `${environtment.apiBaseUrl}/products/viewImages/${product.thumbnail}`;
+            let flag = 0;
+            product.product_images.forEach((product_images: ProductImage) => {
+              if (flag === 1) {
+                product.url = `${environtment.apiBaseUrl}/products/viewImages/${product_images.image_url}`;
+              } else if (flag === 2) {
+                return;
+              }
+              flag++;
+            });
             if (product.product_sale === null) {
               product.product_sale = {
                 id: 0,
@@ -220,7 +228,6 @@ export class ProductDetailsComponent implements OnInit {
         },
       });
   }
-
   addToCart() {
     debugger;
     if (this.product) {
@@ -234,7 +241,7 @@ export class ProductDetailsComponent implements OnInit {
     }
   }
   checkShowMoreProducts() {
-    this.currentPage++;
+    ++this.currentPage;
     this.getProducts(
       this.keyword,
       this.selectedCategoryId,
@@ -254,13 +261,14 @@ export class ProductDetailsComponent implements OnInit {
   getRating() {
     this.products.forEach((product) => {
       let rating = 0;
-
       product.comments.forEach((comment) => {
         rating += comment.rating;
       });
       this.listRating.set(product.id, rating / product.comments.length);
-      console.log(this.listRating);
     });
+  }
+  reviewRating(rating: number) {
+    return Array(rating);
   }
   getRatingProductId(productId: number): any[] {
     const rating = this.listRating.get(productId) as number;
@@ -364,6 +372,30 @@ export class ProductDetailsComponent implements OnInit {
       element3?.classList.add('activeInfor');
       element1?.classList.remove('activeInfor');
       element2?.classList.remove('activeInfor');
+    }
+  }
+  hoveredProductId: number | null = null;
+  hoveredImage: string | null = null;
+
+  hoverImageToImage(productId: number) {
+    this.hoveredProductId = productId;
+    this.getImageFromHover(productId);
+  }
+  hoverOutImage() {
+    this.hoveredProductId = null;
+    this.hoveredImage = null;
+  }
+
+  getImageFromHover(productId: number) {
+    const product = this.products.find((product) => product.id === productId);
+    const productShowMore = this.productShowMore.find(
+      (product) => product.id === productId
+    );
+    if (product) {
+      this.hoveredImage = `${environtment.apiBaseUrl}/products/viewImages/${product.thumbnail}`;
+    }
+    if (productShowMore) {
+      this.hoveredImage = `${environtment.apiBaseUrl}/products/viewImages/${productShowMore.thumbnail}`;
     }
   }
 }

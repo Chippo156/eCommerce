@@ -19,6 +19,7 @@ import { environtment } from '../../environments/environment';
 import { CommmentService } from '../../service/comment.service';
 import { OrderService } from '../../service/order.service';
 import { SoldProduct } from '../../responses/SoldProduct';
+import { ProductImage } from '../../models/product.image';
 
 @Component({
   selector: 'app-product',
@@ -28,6 +29,8 @@ import { SoldProduct } from '../../responses/SoldProduct';
 export class ProductComponent implements OnInit {
   products: Product[] = [];
   productsSort: Product[] = [];
+  productsFilter: Product[] = [];
+  totalPageFilter: number = 0;
   categories: Category[] = [];
   currentPage: number = 0;
   itemsPerPage: number = 16;
@@ -37,6 +40,10 @@ export class ProductComponent implements OnInit {
   selectedCategoryId: number = 0;
   soldQuantity: SoldProduct[] = [];
   listRating: Map<number, number> = new Map<number, number>();
+  hoveredProductId: number | null = null;
+  hoveredImage: string | null = null;
+  colors: string[] = [];
+  checkColor: string = '';
   constructor(
     private router: Router,
     private productService: ProductService,
@@ -57,6 +64,7 @@ export class ProductComponent implements OnInit {
       this.itemsPerPage
     );
     this.getCountQuantityProduct();
+    this.getColors();
   }
   onPageChange(page: number) {
     debugger;
@@ -83,7 +91,16 @@ export class ProductComponent implements OnInit {
         next: (response: any) => {
           debugger;
           response.productResponses.forEach((product: Product) => {
-            product.url = `${environtment.apiBaseUrl}/products/viewImages/${product.thumbnail}`;
+            let flag = 0;
+            product.product_images.forEach((product_images: ProductImage) => {
+              if (flag === 1) {
+                product.url = `${environtment.apiBaseUrl}/products/viewImages/${product_images.image_url}`;
+              } else if (flag === 2) {
+                return;
+              }
+              flag++;
+            });
+
             if (product.product_sale === null) {
               product.product_sale = {
                 id: 0,
@@ -97,6 +114,8 @@ export class ProductComponent implements OnInit {
           });
           this.products = response.productResponses;
           this.totalPages = response.totalPage;
+          this.totalPageFilter = this.totalPages;
+          this.productsFilter = this.products;
           this.visiblePages = this.generateVisiblePages(
             this.currentPage,
             this.totalPages
@@ -185,12 +204,10 @@ export class ProductComponent implements OnInit {
   getRating() {
     this.products.forEach((product) => {
       let rating = 0;
-
       product.comments.forEach((comment) => {
         rating += comment.rating;
       });
       this.listRating.set(product.id, rating / product.comments.length);
-      console.log(this.listRating);
     });
   }
   getRatingProductId(productId: number): any[] {
@@ -228,5 +245,162 @@ export class ProductComponent implements OnInit {
     return quantity > 1000
       ? (quantity / 1000).toFixed(1) + 'k'
       : quantity.toString();
+  }
+
+  hoverImageToImage(productId: number) {
+    this.hoveredProductId = productId;
+    this.getImageFromHover(productId);
+  }
+  hoverOutImage() {
+    this.hoveredProductId = null;
+    this.hoveredImage = null;
+  }
+
+  getImageFromHover(productId: number) {
+    const product = this.products.find((product) => product.id === productId);
+    if (product) {
+      this.hoveredImage = `${environtment.apiBaseUrl}/products/viewImages/${product.thumbnail}`;
+    }
+  }
+  filterProductByCategory() {
+    let categoryName = (
+      document.querySelector(
+        'input[name="category"]:checked'
+      ) as HTMLInputElement
+    )?.value;
+    console.log(categoryName);
+    if (categoryName === undefined) {
+      this.products = this.productsFilter;
+      console.log(this.productsFilter);
+    }
+    this.productService.getProductByCategoryName(categoryName).subscribe({
+      next: (response: any) => {
+        debugger;
+        response.productResponses.forEach((product: Product) => {
+          let flag = 0;
+          product.product_images.forEach((product_images: ProductImage) => {
+            if (flag === 1) {
+              product.url = `${environtment.apiBaseUrl}/products/viewImages/${product_images.image_url}`;
+            } else if (flag === 2) {
+              return;
+            }
+            flag++;
+          });
+
+          if (product.product_sale === null) {
+            product.product_sale = {
+              id: 0,
+              description: '',
+              sale: 0,
+              newProduct: true,
+              startDate: new Date(),
+              endDate: new Date(),
+            };
+          }
+        });
+        this.products = response.productResponses;
+        if (this.products.length === 0) {
+          this.products = this.productsFilter;
+          this.totalPages = this.totalPageFilter;
+        }
+        if (response.totalPage >= 0 && response.productResponses.length > 0) {
+          this.totalPages = response.totalPage;
+        }
+
+        this.visiblePages = this.generateVisiblePages(
+          this.currentPage,
+          this.totalPages
+        );
+      },
+      complete: () => {
+        debugger;
+        this.getRating();
+      },
+      error: (error) => {
+        debugger;
+        console.log(error);
+      },
+    });
+  }
+  filterProductByPrice() {
+    this.products = this.productsFilter;
+    let checkboxes = Array.from(
+      document.querySelectorAll('input[name="price"]:checked')
+    );
+    let listPrice = checkboxes.map(
+      (checkbox) => (checkbox as HTMLInputElement).value
+    );
+    let productPrice: Product[] = [];
+    console.log(productPrice);
+    listPrice.forEach((price) => {
+      if (price === '1') {
+        this.products.forEach((product) => {
+          if (product.price < 500000) {
+            productPrice.push(product);
+          }
+        });
+      }
+      if (price === '2') {
+        this.products.forEach((product) => {
+          if (product.price >= 500000 && product.price < 1000000) {
+            productPrice.push(product);
+          }
+        });
+      }
+      if (price === '3') {
+        this.products.forEach((product) => {
+          if (product.price >= 1000000 && product.price < 2000000) {
+            productPrice.push(product);
+          }
+        });
+      }
+      if (price === '4') {
+        this.products.forEach((product) => {
+          if (product.price >= 2000000 && product.price < 5000000) {
+            productPrice.push(product);
+          }
+        });
+      }
+      if (price === '5') {
+        this.products.forEach((product) => {
+          if (product.price >= 5000000) {
+            productPrice.push(product);
+          }
+        });
+      }
+    });
+    this.products = productPrice;
+    if (productPrice.length === 0) {
+      this.products = this.productsFilter;
+    }
+  }
+  getColors() {
+    this.productService.getCodeColors().subscribe({
+      next: (response: any) => {
+        debugger;
+        this.colors = response;
+      },
+      complete: () => {
+        debugger;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+  }
+  filterProductByColor(color: string) {
+    this.products = this.productsFilter;
+    let productColor: Product[] = [];
+    this.products.forEach((product) => {
+      product.colors.forEach((pColor) => {
+        if (pColor.code === color) {
+          productColor.push(product);
+        }
+      });
+    });
+    this.products = productColor;
+    if (productColor.length === 0) {
+      this.products = this.productsFilter;
+    }
   }
 }

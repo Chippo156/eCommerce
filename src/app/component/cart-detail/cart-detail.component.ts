@@ -22,20 +22,18 @@ import { Size } from '../../models/sizes';
   styleUrls: ['./cart-detail.component.scss'],
 })
 export class CartDetailComponent implements OnInit {
-  @ViewChild('userNameRef') userNameRef!: ElementRef;
-  @ViewChild('phoneNumberRef')
-  phoneNumberRef!: ElementRef;
-  @ViewChild('addressRef') addressRef!: ElementRef;
   orderId: number = 0;
-  // @ViewChild('paymentRef') paymentRef!: ElementRef;
-  cartItems: { product: Product; quantity: number }[] = [];
+  userName: string = '';
+  phoneNumber: string = '';
+  email: string = '';
+  cartItems: { product: Product; quantity: number; size: string }[] = [];
   couponCode: string = '';
   checkAddCoupon: boolean = false;
   totalMoney: number = 0;
   subTotal: number = 0;
   discount: number = 0;
   selectedPayment: string = 'Thanh toán khi nhận hàng';
-  address: string[] = [];
+  address: string = '';
   selectedAddress: string = '';
   userResponse: UserResponse =
     this.userService.getUserResponseFromLocalStorage()!;
@@ -83,25 +81,22 @@ export class CartDetailComponent implements OnInit {
     this.orderDTO.payment_method = 'Cash';
     this.orderDTO.shipping_address = '';
     this.orderDTO.tracking_number = '';
-    this.address.push('123 Main Dr');
-    this.address.push('456 Maple Dr');
-    this.address.push('789 Maple Dr');
   }
   ngOnInit(): void {
     debugger;
     window.scrollTo(0, 0);
     this.orderDTO.user_id = this.tokenService.getUserIdByToken();
-    const cartSize = this.cartService.getCartSize();
-    const cart = this.cartService.getCart();
-    let productIds = Array.from(cart.keys());
+    const cartSize1 = this.cartService.getCartSize1();
+    let productIds = Array.from(cartSize1.keys());
     if (productIds.length === 0) {
       return;
     }
     this.productService.getProductByIds(productIds).subscribe({
       next: (products: any) => {
         debugger;
-        this.cartItems = productIds.map((productId) => {
-          debugger;
+        this.cartItems = [];
+
+        productIds.forEach((productId) => {
           const product = products.productResponses.find(
             (p: Product) => p.id === productId
           );
@@ -117,19 +112,25 @@ export class CartDetailComponent implements OnInit {
                 endDate: new Date(),
               };
             }
-            let selectedSize = cartSize.get(productId);
+
+            let selectedSize = cartSize1.get(productId);
+            //cartSize1: Map<number, Map<string, number>>
             if (selectedSize) {
-              this.size = product.sizes.find(
-                (s: any) => s.size === selectedSize
-              );
-              product.price =
-                ((product.price * (100 - product.product_sale.sale)) / 100) *
-                (1 + this.size.priceSize / 100);
+              selectedSize.forEach((value, key) => {
+                const productCopy = { ...product }; // copy the product
+                this.size = product.sizes.find((s: any) => s.size === key);
+                productCopy.price =
+                  ((product.price * (100 - product.product_sale.sale)) / 100) *
+                  (1 + this.size.priceSize / 100);
+                this.cartItems.push({
+                  product: productCopy,
+                  quantity: value,
+                  size: key,
+                });
+              });
             }
           }
-          return { product: product!, quantity: cart.get(productId)! };
         });
-        console.log('haha');
       },
       complete: () => {
         debugger;
@@ -153,31 +154,41 @@ export class CartDetailComponent implements OnInit {
       0
     );
   }
-  onChangeTransport() {
-    console.log(this.selectedTranport); // This will log the value of the selected radio button
-  }
-  onChangeShippingAddress() {
-    debugger;
-    this.addressRef.nativeElement.textContent = this.selectedAddress;
+  getPaymentMethodAndShippingMethod() {
+    let selectedPayment = document.querySelector(
+      'input[name="payment"]:checked'
+    );
+    let selectedTranport = document.querySelector(
+      'input[name="shipping"]:checked'
+    );
+    if (selectedTranport) {
+      this.selectedTranport = (selectedTranport as HTMLInputElement).value;
+    }
+    if (selectedPayment) {
+      this.selectedPayment = (selectedPayment as HTMLInputElement).value;
+    }
   }
   placeOrder(): void {
     debugger;
     this.orderDTO.cart_items = this.cartItems.map((item) => {
       return { product_id: item.product.id, quantity: item.quantity };
     });
-    this.orderDTO.full_name = this.userNameRef.nativeElement.textContent;
-    this.orderDTO.phone_number = this.phoneNumberRef.nativeElement.textContent;
-    this.orderDTO.address = this.addressRef.nativeElement.textContent;
+    this.getPaymentMethodAndShippingMethod();
+    this.orderDTO.full_name = this.userName;
+    this.orderDTO.phone_number = this.phoneNumber;
+    this.orderDTO.email = this.email;
+    this.orderDTO.address = this.address;
     this.orderDTO.payment_method = this.selectedPayment;
-
+    this.orderDTO.shipping_method = this.selectedTranport;
+    this.orderDTO.total_money = this.totalMoney;
     this.orderService.placeOrder(this.orderDTO).subscribe({
       next: (response) => {
         debugger;
         this.orderId = response.id;
-        if (response.payment_method === 'Thanh toán qua thẻ') {
+        if (response.payment_method === 'Thanh toán online qua cổng VNPay') {
           alert('Bạn chắc chắn thanh toán qua thẻ');
         }
-        if (response.payment_method === 'Thanh toán khi nhận hàng') {
+        if (response.payment_method === 'Thanh toán tiền mặt') {
           this.router.navigate(['/']);
           this.cartService.clearCart();
         } else {

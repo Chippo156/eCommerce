@@ -17,13 +17,12 @@ import { Size } from '../../models/sizes';
   styleUrl: './cart.component.scss',
 })
 export class CartComponent implements OnInit {
-  cartItems: { product: Product; quantity: number }[] = [];
+  cartItems: { product: Product; quantity: number; size: string }[] = [];
   couponCode: string = '';
   totalMoney: number = 0;
-
   subTotal: number = 0;
   size!: Size;
-
+  selectedSize: string[] = [];
   constructor(
     private productService: ProductService,
     private cartService: CartService
@@ -33,12 +32,15 @@ export class CartComponent implements OnInit {
     window.scrollTo(0, 0);
     const cart = this.cartService.getCart();
     const cartSize = this.cartService.getCartSize();
+    const cartSize1 = this.cartService.getCartSize1();
     const productIds = Array.from(cart.keys());
+
     this.productService.getProductByIds(productIds).subscribe({
       next: (products: any) => {
         debugger;
-        this.cartItems = productIds.map((productId) => {
-          debugger;
+        this.cartItems = [];
+
+        productIds.forEach((productId) => {
           const product = products.productResponses.find(
             (p: Product) => p.id === productId
           );
@@ -53,23 +55,26 @@ export class CartComponent implements OnInit {
                 startDate: new Date(),
                 endDate: new Date(),
               };
-
-              // product.price =
-              //   (product.price * (100 - product.product_sale.sale)) / 100;
             }
-            let selectedSize = cartSize.get(productId);
+
+            let selectedSize = cartSize1.get(productId);
+            //cartSize1: Map<number, Map<string, number>>
             if (selectedSize) {
-              this.size = product.sizes.find(
-                (s: any) => s.size === selectedSize
-              );
-              product.price =
-                ((product.price * (100 - product.product_sale.sale)) / 100) *
-                (1 + this.size.priceSize / 100);
+              selectedSize.forEach((value, key) => {
+                const productCopy = { ...product }; // copy the product
+                this.size = product.sizes.find((s: any) => s.size === key);
+                productCopy.price =
+                  ((product.price * (100 - product.product_sale.sale)) / 100) *
+                  (1 + this.size.priceSize / 100);
+                this.cartItems.push({
+                  product: productCopy,
+                  quantity: value,
+                  size: key,
+                });
+              });
             }
           }
-          return { product: product!, quantity: cart.get(productId)! };
         });
-        console.log('haha');
       },
       complete: () => {
         debugger;
@@ -87,21 +92,19 @@ export class CartComponent implements OnInit {
       0
     );
   }
-  removeItem(productId: number) {
-    this.cartService.removeProduct(productId);
-    this.cartItems = this.cartItems.filter(
-      (item) => item.product.id !== productId
-    );
+  removeItem(productId: number, size: string) {
+    this.cartItems = this.cartItems.filter((item) => item.size !== size);
+    this.cartService.removeProduct(productId, size);
     this.calculateTotalMoney();
   }
-  onChangeQuantity(productId: number, quantity: number) {
+  onChangeQuantity(productId: number, quantity: number, size: string) {
     if (quantity < 1) {
       quantity = 0;
       return;
     }
-    this.cartService.updateQuantity(productId, quantity);
+    this.cartService.updateQuantity(productId, quantity, size);
     this.cartItems = this.cartItems.map((item) => {
-      if (item.product.id === productId) {
+      if (item.product.id === productId && item.size === size) {
         item.quantity = quantity;
       }
       return item;

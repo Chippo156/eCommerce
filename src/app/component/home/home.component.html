@@ -67,7 +67,15 @@
     <div class="row">
       <div class="col-lg-3 col-md-6" *ngFor="let product of products">
         <div class="product" (click)="onProductClick(product.id)">
-          <img class="product-image" [src]="product.url" alt="" />
+          <img
+            id="image"
+            class="product-image"
+            alt=""
+            (mouseover)="hoverImageToImage(product.id)"
+            (mouseout)="hoverOutImage()"
+            [src]="hoveredProductId === product.id ? hoveredImage : product.url"
+          />
+
           <div
             class="product-sale"
             *ngIf="product.product_sale.newProduct === false"
@@ -127,7 +135,14 @@
     <div class="row" *ngIf="checkShowMore">
       <div class="col-lg-3 col-md-6" *ngFor="let product of productShowMore">
         <div class="product" (click)="onProductClick(product.id)">
-          <img class="product-image" [src]="product.url" alt="" />
+          <img
+            id="image"
+            class="product-image"
+            alt=""
+            (mouseover)="hoverImageToImage(product.id)"
+            (mouseout)="hoverOutImage()"
+            [src]="hoveredProductId === product.id ? hoveredImage : product.url"
+          />
           <div
             class="product-sale"
             *ngIf="product.product_sale.newProduct === false"
