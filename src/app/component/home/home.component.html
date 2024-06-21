@@ -112,7 +112,7 @@
                 >
                   <i class="fa-solid fa-star"></i>
                 </div>
-                <span> ({{ product.comments.length }})</span>
+                <span> ({{ comments }})</span>
               </div>
               <div class="product-sales">
                 <span style="font-size: 14px"
@@ -174,7 +174,7 @@
               >Rp {{ product.price.toLocaleString("vi-VN") }}₫
             </del>
             <div class="product-rating d-flex justify-content-between mt-1">
-              <div class="product-rating_star d-flex">
+              <!-- <div class="product-rating_star d-flex">
                 <div
                   class="product-rating_star"
                   *ngFor="let star of getRatingProductId(product.id)"
@@ -188,11 +188,11 @@
                   >Đã bán
                   {{ formatQuantity(getSoldQuantity(product.id)) }}
                 </span>
-              </div>
+              </div> -->
             </div>
-            <div class="color-item" *ngFor="let color of product.colors">
+            <!-- <div class="color-item" *ngFor="let color of product.colors">
               <div class="color" [style.background-color]="color.code"></div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

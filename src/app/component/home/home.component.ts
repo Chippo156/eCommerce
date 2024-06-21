@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
   productShowMore: Product[] = [];
   categories: Category[] = [];
   currentPage: number = 0;
-  itemsPerPage: number = 12;
+  itemsPerPage: number = 8;
   pages: number[] = [];
   totalPages: number = 0;
   visiblePages: number[] = [];
@@ -43,6 +43,7 @@ export class HomeComponent implements OnInit {
   productId: number = 0;
   checkImage: boolean = false;
   soldQuantity: SoldProduct[] = [];
+  comments: number = 0;
 
   listRating: Map<number, number> = new Map<number, number>();
   constructor(
@@ -115,6 +116,7 @@ export class HomeComponent implements OnInit {
                 endDate: new Date(),
               };
             }
+            this.comments = response.comments;
           });
           this.products = response.productResponses;
           this.totalPages = response.totalPages;
