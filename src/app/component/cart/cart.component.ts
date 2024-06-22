@@ -62,7 +62,9 @@ export class CartComponent implements OnInit {
             if (selectedSize) {
               selectedSize.forEach((value, key) => {
                 const productCopy = { ...product }; // copy the product
-                this.size = product.sizes.find((s: any) => s.size === key);
+                this.size = product.product_sizes.find(
+                  (s: Size) => s.size === key
+                );
                 productCopy.price =
                   ((product.price * (100 - product.product_sale.sale)) / 100) *
                   (1 + this.size.priceSize / 100);

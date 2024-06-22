@@ -8,7 +8,7 @@ import { OrderDTO } from '../../dtos/orderDto';
 import { OrderService } from '../../service/order.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TokenService } from '../../service/token.service';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../../service/user.service';
 import { UserResponse } from '../../responses/userResponse';
 import { PaymentService } from '../../service/payment.service';
@@ -22,6 +22,8 @@ import { Size } from '../../models/sizes';
   styleUrls: ['./cart-detail.component.scss'],
 })
 export class CartDetailComponent implements OnInit {
+  orderForm!: FormGroup;
+  checkLogin: boolean = false;
   orderId: number = 0;
   userName: string = '';
   phoneNumber: string = '';
@@ -53,7 +55,7 @@ export class CartDetailComponent implements OnInit {
     total_money: 0,
     shipping_method: '',
     payment_method: '',
-    shipping_address: '',
+    shipping_address: 'hehe',
     tracking_number: '',
     cart_items: [],
   };
@@ -70,6 +72,12 @@ export class CartDetailComponent implements OnInit {
     private paymentService: PaymentService,
     private couponService: CouponService
   ) {
+    this.orderForm = this.fb.group({
+      userName: ['', Validators.required],
+      email: ['', [Validators.email]],
+      phoneNumber: ['', [Validators.required, Validators.minLength(6)]],
+      address: ['', [Validators.required, Validators.minLength(5)]],
+    });
     this.orderDTO.full_name = '';
     this.orderDTO.email = '';
     this.orderDTO.phone_number = '';
@@ -86,6 +94,9 @@ export class CartDetailComponent implements OnInit {
     debugger;
     window.scrollTo(0, 0);
     this.orderDTO.user_id = this.tokenService.getUserIdByToken();
+    if (this.orderDTO.user_id !== 0) {
+      this.checkLogin = true;
+    }
     const cartSize1 = this.cartService.getCartSize1();
     let productIds = Array.from(cartSize1.keys());
     if (productIds.length === 0) {
@@ -112,13 +123,14 @@ export class CartDetailComponent implements OnInit {
                 endDate: new Date(),
               };
             }
-
             let selectedSize = cartSize1.get(productId);
             //cartSize1: Map<number, Map<string, number>>
             if (selectedSize) {
               selectedSize.forEach((value, key) => {
                 const productCopy = { ...product }; // copy the product
-                this.size = product.sizes.find((s: any) => s.size === key);
+                this.size = product.product_sizes.find(
+                  (s: any) => s.size === key
+                );
                 productCopy.price =
                   ((product.price * (100 - product.product_sale.sale)) / 100) *
                   (1 + this.size.priceSize / 100);
@@ -169,85 +181,107 @@ export class CartDetailComponent implements OnInit {
     }
   }
   placeOrder(): void {
-    debugger;
-    this.orderDTO.cart_items = this.cartItems.map((item) => {
-      return { product_id: item.product.id, quantity: item.quantity };
-    });
-    this.getPaymentMethodAndShippingMethod();
-    this.orderDTO.full_name = this.userName;
-    this.orderDTO.phone_number = this.phoneNumber;
-    this.orderDTO.email = this.email;
-    this.orderDTO.address = this.address;
-    this.orderDTO.payment_method = this.selectedPayment;
-    this.orderDTO.shipping_method = this.selectedTranport;
-    this.orderDTO.total_money = this.totalMoney;
-    this.orderService.placeOrder(this.orderDTO).subscribe({
-      next: (response) => {
+    if (this.checkLogin) {
+      if (
+        this.orderForm.get('userName')?.value !== '' &&
+        this.orderForm.get('email')?.value !== '' &&
+        this.orderForm.get('phoneNumber')?.value !== '' &&
+        this.orderForm.get('address')?.value !== ''
+      ) {
         debugger;
-        this.orderId = response.id;
-        if (response.payment_method === 'Thanh toán online qua cổng VNPay') {
-          alert('Bạn chắc chắn thanh toán qua thẻ');
-        }
-        if (response.payment_method === 'Thanh toán tiền mặt') {
-          this.router.navigate(['/']);
-          this.cartService.clearCart();
-        } else {
-          this.paymentService
-            .getCreatePayment('NCB', this.totalMoney, this.orderId)
-            .subscribe({
-              next: (response) => {
-                debugger;
-                this.createPayment = response;
-                if (this.createPayment?.code === 'ok') {
-                  window.location.href = this.createPayment.paymentUrl;
-                }
-              },
-              complete: () => {
-                debugger;
-                console.log(this.homeUrl);
-                if (this.createPayment?.code === 'ok') {
-                  debugger;
-                  const url = new URLSearchParams(window.location.search);
-                  console.log(url);
-                  this.paymentService.getInfoPayment(url).subscribe({
-                    next: (response: any) => {
+        this.orderDTO.cart_items = this.cartItems.map((item) => {
+          return { product_id: item.product.id, quantity: item.quantity };
+        });
+        this.getPaymentMethodAndShippingMethod();
+        this.orderDTO.full_name = this.orderForm.get('userName')?.value;
+        this.orderDTO.phone_number = this.orderForm.get('phoneNumber')?.value;
+        this.orderDTO.email = this.orderForm.get('email')?.value;
+        this.orderDTO.address = this.orderForm.get('address')?.value;
+        this.orderDTO.payment_method = this.selectedPayment;
+        this.orderDTO.shipping_method = this.selectedTranport;
+        this.orderDTO.total_money = this.totalMoney;
+        this.orderDTO.shipping_address = this.selectedAddress;
+
+        this.orderService.placeOrder(this.orderDTO).subscribe({
+          next: (response) => {
+            debugger;
+            this.orderId = response;
+            if (
+              response.payment_method === 'Thanh toán online qua cổng VNPay'
+            ) {
+              alert('Bạn chắc chắn thanh toán qua thẻ');
+            }
+            if (
+              response.payment_method === 'Thanh toán tiền mặt' ||
+              response.payment_method === 'POS'
+            ) {
+              this.router.navigate(['/']);
+              this.cartService.clearCart();
+            } else {
+              this.paymentService
+                .getCreatePayment('NCB', this.totalMoney, this.orderId)
+                .subscribe({
+                  next: (response) => {
+                    debugger;
+                    this.createPayment = response;
+                    if (this.createPayment?.code === 'ok') {
+                      window.location.href = this.createPayment.paymentUrl;
+                    }
+                  },
+                  complete: () => {
+                    debugger;
+                    console.log(this.homeUrl);
+                    if (this.createPayment?.code === 'ok') {
                       debugger;
-                      alert(response);
-                      this.router.navigate(['']);
-                    },
-                    complete: () => {
-                      debugger;
-                      alert(response);
-                    },
-                    error: (error: any) => {
-                      debugger;
-                      console.log(
-                        'Error fetching data payment method: ',
-                        error
-                      );
-                    },
-                  });
-                }
-              },
-              error: (error) => {
-                debugger;
-                alert(`Lỗi khi tạo thanh toán ${error}`);
-              },
-            });
-        }
-        // this.router.navigate(['/']);
-        this.cartService.clearCart();
-        alert('Order successfully');
-      },
-      complete: () => {
-        debugger;
-        this.calculateTotalMoney();
-      },
-      error: (error) => {
-        debugger;
-        alert(`Lỗi khi đặt hàng ${error}`);
-      },
-    });
+                      const url = new URLSearchParams(window.location.search);
+                      console.log(url);
+                      this.paymentService.getInfoPayment(url).subscribe({
+                        next: (response: any) => {
+                          debugger;
+                          alert(response);
+                          this.router.navigate(['']);
+                        },
+                        complete: () => {
+                          debugger;
+                          alert(response);
+                        },
+                        error: (error: any) => {
+                          debugger;
+                          console.log(
+                            'Error fetching data payment method: ',
+                            error
+                          );
+                        },
+                      });
+                    }
+                  },
+                  error: (error) => {
+                    debugger;
+                    alert(`Lỗi khi tạo thanh toán ${error}`);
+                  },
+                });
+            }
+            // this.router.navigate(['/']);
+            this.cartService.clearCart();
+            alert('Order successfully');
+          },
+          complete: () => {
+            debugger;
+            this.calculateTotalMoney();
+          },
+          error: (error) => {
+            debugger;
+            alert(`Lỗi khi đặt hàng ${error}`);
+          },
+        });
+      } else {
+        alert('Vui lòng điền đầy đủ thông tin');
+        this.orderForm.markAllAsTouched();
+      }
+    } else {
+      alert('Bạn cần đăng nhập để thực hiện chức năng này');
+      this.router.navigate(['/login']);
+    }
   }
   CalculateCoupon() {
     if (this.checkAddCoupon === false) {

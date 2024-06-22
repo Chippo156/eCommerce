@@ -58,4 +58,13 @@ export class ProductService {
   getCodeColors(): Observable<any> {
     return this.http.get(`${this.apiGetColors}/codes`);
   }
+  getProductsRating(): Observable<any> {
+    return this.http.get(`${this.apiGetProducts}/rating-products`);
+  }
+  getProductDetailSizes(id: number): Observable<any> {
+    return this.http.get(`${this.apiGetProducts}/sizes/${id}`);
+  }
+  getCommentByProductId(id: number): Observable<any> {
+    return this.http.get(`${this.apiGetProducts}/comments/${id}`);
+  }
 }

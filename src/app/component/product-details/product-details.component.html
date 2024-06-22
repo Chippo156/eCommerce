@@ -121,7 +121,7 @@
           >
             <line x1="0.5" x2="0.5" y2="30" stroke="#9F9F9F" />
           </svg>
-          <p>{{ product.comments.length }} Reviews</p>
+          <!-- <p>{{ product.comments.length }} Reviews</p> -->
           <svg
             width="1"
             height="30"
@@ -143,7 +143,7 @@
           <p>Size</p>
           <ul>
             <li
-              *ngFor="let size of product.sizes"
+              *ngFor="let size of sizes"
               (click)="clickSize(size.size)"
               [ngClass]="{ selected: size.size === selectedSize }"
             >
@@ -159,7 +159,7 @@
               *ngFor="let color of colors"
               [style.background-color]="color.code"
               [ngClass]="{ selectedColor: color.code === selectedColor }"
-              (click)="clickColor(color.code); getProductByColor(color.code)"
+              (click)="clickColor(color.code)"
             ></div>
           </div>
         </div>
@@ -185,7 +185,7 @@
           Thông tin thêm
         </div>
         <div class="p-4" id="review" (click)="checkInforProduct('review')">
-          Đánh giá[{{ product.comments.length }}]
+          Đánh giá[{{ comments.length }}]
         </div>
       </div>
       <div class="" *ngIf="checkInfor === 'des'">
@@ -223,7 +223,7 @@
         <div class="container px-5" style="color: #9f9f9f">
           <div
             class="d-flex flex-column mt-5 gap-3"
-            *ngFor="let review of product.comments.slice(0, 6)"
+            *ngFor="let review of comments"
           >
             <div class="comment_user d-flex flex-column">
               <div class="user gap-3">
@@ -231,7 +231,7 @@
                   <i class="fa-solid fa-user"></i>
                 </div>
                 <div class="product-rating_star gap-3" style="font-size: 20px">
-                  <div>{{ review.user.full_name }}</div>
+                  <div>{{ review.userName }}</div>
                   <div class="d-flex gap-2">
                     <div
                       class="product-rating_star"
@@ -260,153 +260,5 @@
     </div>
   </section>
   <section></section>
-  <section class="related-product">
-    <h3>Related Products</h3>
-    <div class="row container">
-      <div class="row">
-        <div class="col-lg-3 col-md-6" *ngFor="let product of products">
-          <div class="product" (click)="getProductDetail(product.id)">
-            <img
-              id="image"
-              class="product-image"
-              alt=""
-              (mouseover)="hoverImageToImage(product.id)"
-              (mouseout)="hoverOutImage()"
-              [src]="
-                hoveredProductId === product.id ? hoveredImage : product.url
-              "
-            />
-            <div
-              class="product-sale"
-              *ngIf="product.product_sale.newProduct === false"
-            >
-              {{ product.product_sale.sale }}%
-            </div>
-            <div
-              class="product-new"
-              *ngIf="product.product_sale.newProduct === true"
-            >
-              New
-            </div>
-            <div class="product-infor">
-              <h6 class="product-name">{{ product.name }}</h6>
-              <div class="product_price d-flex align-item-center gap-3">
-                <b>
-                  {{
-                    (
-                      product.price *
-                      ((100 - product.product_sale.sale) / 100)
-                    ).toLocaleString("vi-VN")
-                  }}₫</b
-                >
-                <del *ngIf="!product.product_sale.newProduct"
-                  >{{ product.price.toLocaleString("vi-VN") }}₫
-                </del>
-              </div>
-
-              <div class="product-rating d-flex justify-content-between mt-1">
-                <div class="product-rating_star d-flex">
-                  <div
-                    class="product-rating_star"
-                    *ngFor="let star of getRatingProductId(product.id)"
-                  >
-                    <i class="fa-solid fa-star"></i>
-                  </div>
-                  <span> ({{ product.comments.length }})</span>
-                </div>
-                <div class="product-sales">
-                  <span style="font-size: 14px"
-                    >Đã bán
-                    {{ formatQuantity(getSoldQuantity(product.id)) }}
-                  </span>
-                </div>
-              </div>
-              <div class="color-item">
-                <div
-                  class="color"
-                  *ngFor="let color of product.colors"
-                  [style.background-color]="color.code"
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row container" *ngIf="checkShowMore">
-      <div class="row">
-        <div class="col-lg-3 col-md-6" *ngFor="let product of products">
-          <div class="product" (click)="getProductDetail(product.id)">
-            <img
-              id="image"
-              class="product-image"
-              alt=""
-              (mouseover)="hoverImageToImage(product.id)"
-              (mouseout)="hoverOutImage()"
-              [src]="
-                hoveredProductId === product.id ? hoveredImage : product.url
-              "
-            />
-            <div
-              class="product-sale"
-              *ngIf="product.product_sale.newProduct === false"
-            >
-              {{ product.product_sale.sale }}%
-            </div>
-            <div
-              class="product-new"
-              *ngIf="product.product_sale.newProduct === true"
-            >
-              New
-            </div>
-
-            <div class="product-infor">
-              <h6 class="product_name">{{ product.name }}</h6>
-
-              <span class="product_price">
-                <b
-                  >Rp
-                  {{
-                    product.price * ((100 - product.product_sale.sale) / 100)
-                  }}</b
-                ></span
-              >
-              <del *ngIf="!product.product_sale.newProduct"
-                >Rp {{ product.price }}
-              </del>
-              <div class="product-rating d-flex justify-content-between mt-1">
-                <div class="product-rating_star d-flex">
-                  <div
-                    class="product-rating_star"
-                    *ngFor="let star of getRatingProductId(product.id)"
-                  >
-                    <i class="fa-solid fa-star"></i>
-                  </div>
-                  <span> ({{ product.comments.length }})</span>
-                </div>
-                <div class="product-sales">
-                  <span style="font-size: 14px"
-                    >Đã bán
-                    {{ formatQuantity(getSoldQuantity(product.id)) }}
-                  </span>
-                </div>
-              </div>
-              <div class="color-item">
-                <div
-                  class="color"
-                  *ngFor="let color of product.colors"
-                  [style.background-color]="color.code"
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <button class="show-more" (click)="checkShowMoreProducts()">
-      Show more
-    </button>
-  </section>
 </main>
 <app-footer></app-footer>

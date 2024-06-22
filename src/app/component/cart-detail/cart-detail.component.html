@@ -10,8 +10,12 @@
       </div>
       <div class="checkout-infor">
         <h6>Thông tin giao hàng</h6>
-        <span>Qúy khách đã có tài khoản ? <a href="#">Đăng nhập</a></span>
-        <form action="">
+        <span *ngIf="!checkLogin"
+          >Qúy khách đã có tài khoản ?
+          <a routerLink="/login">Đăng nhập</a></span
+        >
+
+        <form action="" [formGroup]="orderForm">
           <div class="form-group my-3">
             <input
               type="text"
@@ -19,28 +23,82 @@
               id="name"
               placeholder="Họ và tên"
               [(ngModel)]="userName"
+              formControlName="userName"
               name="userName"
+              [class.is-invalid]="
+                orderForm.get('userName')!.invalid &&
+                orderForm.get('userName')!.touched
+              "
+              class="form-control"
+              id="name"
+              required
             />
+            <div
+              *ngIf="
+                orderForm.get('userName')!.invalid &&
+                orderForm.get('userName')!.touched
+              "
+              class="invalid-feedback"
+            >
+              Vui lòng nhập họ và tên
+            </div>
           </div>
 
-          <div class="form-group my-3 d-flex align-item-center gap-3">
-            <input
-              type="text"
-              class="form-control"
-              id="phone"
-              placeholder="Số điện thoại"
-              [(ngModel)]="phoneNumber"
-              name="phoneNumber"
-            />
-
-            <input
-              type="email"
-              class="form-control"
-              id="email"
-              placeholder="Nhập email"
-              [(ngModel)]="email"
-              name="email"
-            />
+          <div class="form-group my-3 d-flex align-item-center">
+            <div class="w-50" style="margin-right: 10px">
+              <input
+                type="text"
+                class="form-control"
+                id="phone"
+                placeholder="Số điện thoại"
+                [(ngModel)]="phoneNumber"
+                formControlName="phoneNumber"
+                name="phoneNumber"
+                [class.is-invalid]="
+                  orderForm.get('phoneNumber')!.invalid &&
+                  orderForm.get('phoneNumber')!.touched
+                "
+                class="form-control"
+                id="name"
+                required
+              />
+              <div
+                *ngIf="
+                  orderForm.get('phoneNumber')!.invalid &&
+                  orderForm.get('phoneNumber')!.touched
+                "
+                class="invalid-feedback"
+              >
+                Vui lòng nhập số điện thoại(6 ký số)
+              </div>
+            </div>
+            <div class="w-50">
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                placeholder="Nhập email"
+                [(ngModel)]="email"
+                formControlName="email"
+                name="email"
+                [class.is-invalid]="
+                  orderForm.get('email')!.invalid &&
+                  orderForm.get('email')!.touched
+                "
+                class="form-control"
+                id="name"
+                required
+              />
+              <div
+                *ngIf="
+                  orderForm.get('email')!.invalid &&
+                  orderForm.get('email')!.touched
+                "
+                class="invalid-feedback"
+              >
+                Không đúng định dạng
+              </div>
+            </div>
           </div>
           <div class="form-group my-3">
             <input
@@ -49,8 +107,24 @@
               id="address"
               placeholder="Địa chỉ"
               [(ngModel)]="address"
+              formControlName="address"
               name="address"
+              [class.is-invalid]="
+                orderForm.get('address')!.invalid &&
+                orderForm.get('address')!.touched
+              "
+              class="form-control"
+              required
             />
+            <div
+              *ngIf="
+                orderForm.get('address')!.invalid &&
+                orderForm.get('address')!.touched
+              "
+              class="invalid-feedback"
+            >
+              Địa chỉ ít nhất 5 ký tự
+            </div>
           </div>
           <div class="form-group my-3 d-flex gap-3 align-item-center">
             <select name="" id="" class="form-control">
@@ -121,7 +195,7 @@
               type="radio"
               name="payment"
               id="payment1"
-              value="Thanh toán quẹt thẻ khi giao hàng (POS)"
+              value="POS"
               checked
             />
             <img src="../../../assets/imgs/other.svg" alt="" width="50" />
@@ -189,7 +263,7 @@
           <div class="product-infor">
             <h6>{{ item.product.name }}</h6>
             <div class="product-detail">
-              <span>{{ item.product.colors[0].color }}</span>
+              <span>{{ item.product.color.color }}</span>
               <span>/</span>
               <span>{{ item.size }}</span>
             </div>

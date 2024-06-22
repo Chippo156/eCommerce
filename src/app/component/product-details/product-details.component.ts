@@ -27,6 +27,7 @@ import { Color } from '../../models/colors';
 import { style } from '@angular/animations';
 import { CommentImage } from '../../models/comment.image';
 import { Comment } from '../../models/comment';
+import { Size } from '../../models/sizes';
 
 @Component({
   selector: 'app-product-details',
@@ -42,7 +43,6 @@ export class ProductDetailsComponent implements OnInit {
     private orderService: OrderService,
     private commentService: CommmentService
   ) {}
-  productShowMore: Product[] = [];
   productCheckColor: Product[] = [];
   checkShowMore: boolean = false;
   product!: Product;
@@ -63,18 +63,14 @@ export class ProductDetailsComponent implements OnInit {
   priceSize: number = 0;
   selectedSize: string = '';
   selectedColor: string = '';
-  colors!: Color[];
+  colors: Color[] = [];
   checkInfor: string = 'des';
+  sizes: Size[] = [];
+  comments: Comment[] = [];
   ngOnInit() {
     debugger;
     window.scrollTo(0, 0);
     this.getProductDetails(0);
-    this.getProducts(
-      this.keyword,
-      this.selectedCategoryId,
-      this.currentPage,
-      this.itemsPerPage
-    );
     this.getCountQuantityProduct();
   }
   getProductDetails(id: number) {
@@ -105,32 +101,17 @@ export class ProductDetailsComponent implements OnInit {
               endDate: new Date(),
             };
           }
-          if (response.sizes.length <= 0) {
-            response.sizes = [
-              {
-                id: 0,
-                size: 'M',
-                priceSize: 0,
-              },
-            ];
-          }
-          if (response.comments.length > 0) {
-            response.comments.forEach((comment: Comment) => {
-              comment.images.forEach((image: CommentImage) => {
-                image.imageUrl = `${environtment.apiBaseUrl}/comments/viewImages/${image.imageUrl}`;
-              });
-            });
-          }
           debugger;
-          this.selectedSize = response.sizes[0].size;
-          this.selectedColor = response.colors[0].code;
+
           this.product = response;
           this.showImage(0);
         },
         complete: () => {
           debugger;
-          this.clickSize(this.selectedSize);
+          this.getProductDetailSizes();
+          // this.clickSize(this.selectedSize);
           this.getProductByCategory(this.product.category_id);
+          this.getCommentByProductId(this.product.id);
         },
         error: (error) => {
           debugger;
@@ -179,55 +160,7 @@ export class ProductDetailsComponent implements OnInit {
       this.quantity--;
     }
   }
-  getProducts(
-    keyword: string,
-    selectedCategoryId: number,
-    page: number,
-    limit: number
-  ) {
-    this.productService
-      .getProducts(keyword, selectedCategoryId, page, limit)
-      .subscribe({
-        next: (response: any) => {
-          debugger;
-          response.productResponses.forEach((product: Product) => {
-            let flag = 0;
-            product.product_images.forEach((product_images: ProductImage) => {
-              if (flag === 1) {
-                product.url = `${environtment.apiBaseUrl}/products/viewImages/${product_images.image_url}`;
-              } else if (flag === 2) {
-                return;
-              }
-              flag++;
-            });
-            if (product.product_sale === null) {
-              product.product_sale = {
-                id: 0,
-                description: '',
-                sale: 0,
-                newProduct: true,
-                startDate: new Date(),
-                endDate: new Date(),
-              };
-            }
 
-            let formattedNumber = product.price.toLocaleString('vi-VN');
-            product.price = parseFloat(formattedNumber);
-          });
-          this.products = response.productResponses;
-          this.totalPages = response.totalPage;
-        },
-        complete: () => {
-          debugger;
-          this.getRating();
-          this.checkInforProduct(this.checkInfor);
-        },
-        error: (error) => {
-          debugger;
-          console.log(error);
-        },
-      });
-  }
   addToCart() {
     debugger;
     if (this.product) {
@@ -240,17 +173,7 @@ export class ProductDetailsComponent implements OnInit {
       console.log('Cannot add cart because product is not available');
     }
   }
-  checkShowMoreProducts() {
-    ++this.currentPage;
-    this.getProducts(
-      this.keyword,
-      this.selectedCategoryId,
-      this.currentPage,
-      this.itemsPerPage
-    );
-    this.productShowMore = this.products;
-    this.checkShowMore = true;
-  }
+
   getProductDetail(productId: number) {
     this.route.navigate(['/products', productId]);
     setTimeout(() => {
@@ -258,15 +181,7 @@ export class ProductDetailsComponent implements OnInit {
       window.scrollTo(0, 0);
     }, 10);
   }
-  getRating() {
-    this.products.forEach((product) => {
-      let rating = 0;
-      product.comments.forEach((comment) => {
-        rating += comment.rating;
-      });
-      this.listRating.set(product.id, rating / product.comments.length);
-    });
-  }
+
   reviewRating(rating: number) {
     return Array(rating);
   }
@@ -294,12 +209,9 @@ export class ProductDetailsComponent implements OnInit {
   }
   getSoldQuantity(productId: number): number {
     const product = this.soldQuantity.find(
-      (product) => product.product.id === productId
+      (product) => product.productId === productId
     );
-    if (product) {
-      return product.quantity;
-    }
-    return 0;
+    return product ? product.count : 0;
   }
   formatQuantity(quantity: number): string {
     return quantity > 1000
@@ -308,12 +220,21 @@ export class ProductDetailsComponent implements OnInit {
   }
   clickSize(size: string) {
     debugger;
+    console.log(size);
     this.selectedSize = size;
-    this.priceSize = this.product.sizes.find((s) => s.size === size)!.priceSize;
+    this.priceSize = this.sizes.find((s) => s.size === size)!.priceSize;
   }
   clickColor(color: string) {
     debugger;
-    this.selectedColor = color;
+    if (this.selectedColor !== color) {
+      this.productCheckColor.find((product) => product.color.code === color)!;
+      this.colors = [];
+      this.getProductDetails(
+        this.productCheckColor.find((product) => product.color.code === color)!
+          .id
+      );
+      this.selectedColor = this.product.color.code;
+    }
   }
   getProductByCategory(categoryId: number) {
     this.productService.getProductByCategoryId(categoryId).subscribe({
@@ -322,7 +243,7 @@ export class ProductDetailsComponent implements OnInit {
         debugger;
       },
       complete: () => {
-        this.getColors();
+        this.getColorsProductDetails();
       },
       error: (error) => {
         debugger;
@@ -331,24 +252,33 @@ export class ProductDetailsComponent implements OnInit {
     });
   }
 
-  getColors() {
+  getColorsProductDetails() {
     debugger;
-    this.colors = [];
-    this.productCheckColor.forEach((product) => {
-      product.colors.forEach((color) => {
-        this.colors.push(color);
-      });
+    this.productCheckColor.forEach((product: Product) => {
+      if (product) {
+        this.colors.push(product.color);
+      }
     });
   }
-  getProductByColor(selectedColor: string) {
+  getProductDetailSizes() {
     debugger;
-    this.productCheckColor.forEach((product) => {
-      product.colors.forEach((color) => {
-        if (color.code === selectedColor) {
-          this.getProductDetails(product.id);
-        }
+    if (this.product) {
+      this.productService.getProductDetailSizes(this.product.id).subscribe({
+        next: (response: any) => {
+          debugger;
+          this.sizes = response;
+        },
+        complete: () => {
+          this.clickSize(this.sizes[0].size);
+
+          debugger;
+        },
+        error: (error) => {
+          debugger;
+          console.log(error);
+        },
       });
-    });
+    }
   }
   checkInforProduct(infor: string) {
     const element1 = document.getElementById('des');
@@ -374,28 +304,19 @@ export class ProductDetailsComponent implements OnInit {
       element2?.classList.remove('activeInfor');
     }
   }
-  hoveredProductId: number | null = null;
-  hoveredImage: string | null = null;
-
-  hoverImageToImage(productId: number) {
-    this.hoveredProductId = productId;
-    this.getImageFromHover(productId);
-  }
-  hoverOutImage() {
-    this.hoveredProductId = null;
-    this.hoveredImage = null;
-  }
-
-  getImageFromHover(productId: number) {
-    const product = this.products.find((product) => product.id === productId);
-    const productShowMore = this.productShowMore.find(
-      (product) => product.id === productId
-    );
-    if (product) {
-      this.hoveredImage = `${environtment.apiBaseUrl}/products/viewImages/${product.thumbnail}`;
-    }
-    if (productShowMore) {
-      this.hoveredImage = `${environtment.apiBaseUrl}/products/viewImages/${productShowMore.thumbnail}`;
-    }
+  getCommentByProductId(productId: number) {
+    debugger;
+    this.productService.getCommentByProductId(productId).subscribe({
+      next: (response: any) => {
+        this.comments = response;
+      },
+      complete: () => {
+        debugger;
+      },
+      error: (response) => {
+        debugger;
+        console.log(response);
+      },
+    });
   }
 }

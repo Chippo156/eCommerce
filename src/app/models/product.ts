@@ -15,7 +15,6 @@ export interface Product {
   category_id: number;
   product_images: ProductImage[];
   product_sale: Sale;
-  comments: Comment[];
-  colors: Color[];
-  sizes: Size[];
+  color: Color;
+  product_sizes: Size[];
 }

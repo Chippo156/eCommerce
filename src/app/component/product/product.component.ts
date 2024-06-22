@@ -33,13 +33,14 @@ export class ProductComponent implements OnInit {
   totalPageFilter: number = 0;
   categories: Category[] = [];
   currentPage: number = 0;
-  itemsPerPage: number = 16;
+  itemsPerPage: number = 8;
   totalPages: number = 0;
   visiblePages: number[] = [];
   keyword: string = '';
   selectedCategoryId: number = 0;
   soldQuantity: SoldProduct[] = [];
   listRating: Map<number, number> = new Map<number, number>();
+  listComment: Map<number, number> = new Map<number, number>();
   hoveredProductId: number | null = null;
   hoveredImage: string | null = null;
   colors: string[] = [];
@@ -64,7 +65,7 @@ export class ProductComponent implements OnInit {
       this.itemsPerPage
     );
     this.getCountQuantityProduct();
-    this.getColors();
+    // this.getColors();
   }
   onPageChange(page: number) {
     debugger;
@@ -123,7 +124,7 @@ export class ProductComponent implements OnInit {
         },
         complete: () => {
           debugger;
-          this.getRating();
+          // this.getRating();
         },
         error: (error) => {
           debugger;
@@ -201,13 +202,19 @@ export class ProductComponent implements OnInit {
       });
     }
   }
-  getRating() {
-    this.products.forEach((product) => {
-      let rating = 0;
-      product.comments.forEach((comment) => {
-        rating += comment.rating;
-      });
-      this.listRating.set(product.id, rating / product.comments.length);
+  getProductsRating() {
+    this.productService.getProductsRating().subscribe({
+      next: (response: any) => {
+        debugger;
+        response.forEach((data: any) => {
+          this.listRating.set(data.product_id, data.rating);
+          this.listComment.set(data.product_id, data.evaluation);
+        });
+      },
+      error: (error) => {
+        debugger;
+        console.log(error);
+      },
     });
   }
   getRatingProductId(productId: number): any[] {
@@ -217,6 +224,9 @@ export class ProductComponent implements OnInit {
       return Array(4);
     }
     return Array(Math.round(rating));
+  }
+  getEvaluationProductId(productId: number): number {
+    return this.listComment.get(productId)!;
   }
   getCountQuantityProduct() {
     this.orderService.countQuantityProductInOrder().subscribe({
@@ -234,12 +244,9 @@ export class ProductComponent implements OnInit {
   }
   getSoldQuantity(productId: number): number {
     const product = this.soldQuantity.find(
-      (product) => product.product.id === productId
+      (product) => product.productId === productId
     );
-    if (product) {
-      return product.quantity;
-    }
-    return 0;
+    return product ? product.count : 0;
   }
   formatQuantity(quantity: number): string {
     return quantity > 1000
@@ -314,7 +321,7 @@ export class ProductComponent implements OnInit {
       },
       complete: () => {
         debugger;
-        this.getRating();
+        this.getProductsRating();
       },
       error: (error) => {
         debugger;
@@ -392,11 +399,9 @@ export class ProductComponent implements OnInit {
     this.products = this.productsFilter;
     let productColor: Product[] = [];
     this.products.forEach((product) => {
-      product.colors.forEach((pColor) => {
-        if (pColor.code === color) {
-          productColor.push(product);
-        }
-      });
+      if (product.color.code === color) {
+        productColor.push(product);
+      }
     });
     this.products = productColor;
     if (productColor.length === 0) {

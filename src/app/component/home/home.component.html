@@ -112,7 +112,7 @@
                 >
                   <i class="fa-solid fa-star"></i>
                 </div>
-                <span> ({{ comments }})</span>
+                <span> ({{ getEvaluationProductId(product.id) }})</span>
               </div>
               <div class="product-sales">
                 <span style="font-size: 14px"
@@ -124,8 +124,7 @@
             <div class="color-item">
               <div
                 class="color"
-                *ngFor="let color of product.colors"
-                [style.background-color]="color.code"
+                [style.background-color]="product.color.code"
               ></div>
             </div>
           </div>

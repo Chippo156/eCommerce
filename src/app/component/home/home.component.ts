@@ -29,7 +29,6 @@ import { ProductImage } from '../../models/product.image';
 export class HomeComponent implements OnInit {
   products: Product[] = [];
   productImage!: Product;
-
   productShowMore: Product[] = [];
   categories: Category[] = [];
   currentPage: number = 0;
@@ -44,8 +43,8 @@ export class HomeComponent implements OnInit {
   checkImage: boolean = false;
   soldQuantity: SoldProduct[] = [];
   comments: number = 0;
-
   listRating: Map<number, number> = new Map<number, number>();
+  listComment: Map<number, number> = new Map<number, number>();
   constructor(
     private router: Router,
     private productService: ProductService,
@@ -123,7 +122,8 @@ export class HomeComponent implements OnInit {
         },
         complete: () => {
           debugger;
-          this.getRating();
+          // this.getRating();
+          this.getProductsRating();
         },
         error: (error) => {
           debugger;
@@ -153,17 +153,7 @@ export class HomeComponent implements OnInit {
       this.itemsPerPage
     );
   }
-  getRating() {
-    this.products.forEach((product) => {
-      let rating = 0;
 
-      product.comments.forEach((comment) => {
-        rating += comment.rating;
-      });
-      this.listRating.set(product.id, rating / product.comments.length);
-      console.log(this.listRating);
-    });
-  }
   getRatingProductId(productId: number): any[] {
     const rating = this.listRating.get(productId) as number;
 
@@ -171,6 +161,9 @@ export class HomeComponent implements OnInit {
       return Array(4);
     }
     return Array(Math.round(rating));
+  }
+  getEvaluationProductId(productId: number): number {
+    return this.listComment.get(productId)!;
   }
   getCountQuantityProduct() {
     this.orderService.countQuantityProductInOrder().subscribe({
@@ -188,12 +181,9 @@ export class HomeComponent implements OnInit {
   }
   getSoldQuantity(productId: number): number {
     const product = this.soldQuantity.find(
-      (product) => product.product.id === productId
+      (product) => product.productId === productId
     );
-    if (product) {
-      return product.quantity;
-    }
-    return 0;
+    return product ? product.count : 0;
   }
   formatQuantity(quantity: number): string {
     return quantity > 1000
@@ -223,5 +213,20 @@ export class HomeComponent implements OnInit {
     if (productShowMore) {
       this.hoveredImage = `${environtment.apiBaseUrl}/products/viewImages/${productShowMore.thumbnail}`;
     }
+  }
+  getProductsRating() {
+    this.productService.getProductsRating().subscribe({
+      next: (response: any) => {
+        debugger;
+        response.forEach((data: any) => {
+          this.listRating.set(data.product_id, data.rating);
+          this.listComment.set(data.product_id, data.evaluation);
+        });
+      },
+      error: (error) => {
+        debugger;
+        console.log(error);
+      },
+    });
   }
 }
