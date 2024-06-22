@@ -8,6 +8,7 @@ import org.ecommerce.ecommerce.models.Product;
 import org.ecommerce.ecommerce.repository.OrderDetailRepository;
 import org.ecommerce.ecommerce.repository.OrderRepository;
 import org.ecommerce.ecommerce.repository.ProductRepository;
+import org.ecommerce.ecommerce.responses.CountProductByOrdersResponse;
 import org.ecommerce.ecommerce.responses.OrderDetaiResponse;
 import org.ecommerce.ecommerce.services.iOrderDetailService;
 import org.modelmapper.ModelMapper;
@@ -76,11 +77,7 @@ public class OrderDetailService implements iOrderDetailService {
     }
 
     @Override
-    public Map<Long, Integer> countNumberOfProduct() {
-        List<Object[]> objects = orderDetailRepository.countNumberOfProduct();
-        return objects.stream().collect(Collectors.toMap(
-                object -> Long.parseLong(object[0].toString()),
-                object -> Integer.parseInt(object[1].toString())
-        ));
+    public List<CountProductByOrdersResponse> countNumberOfProduct() {
+       return orderDetailRepository.countNumberOfProduct();
     }
 }

@@ -17,7 +17,6 @@ public class Color {
     private Long id;
     private String color;
     private String code;
-
     @ManyToOne
     @JoinColumn(name = "product_id")
     @JsonIgnore

@@ -12,4 +12,7 @@ import java.util.Map;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT c.product.id, COUNT(c) as comment FROM Comment c WHERE c.product.id IS NOT NULL GROUP BY c.product.id")
     List<Object[]> countComment();
+
+    @Query("SELECT c FROM Comment c WHERE c.product.id = :productId ORDER BY c.createdAt DESC limit 6")
+    List<Comment> findByProduct(@Param("productId") Long productId);
 }

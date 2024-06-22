@@ -51,14 +51,16 @@ public class WebSecurityConfig {
                                     String.format("%s/products/uploadImages/**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.GET,
                                     String.format("%s/products/**", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/products/rating-products", apiPrefix)).permitAll()
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/products/sizes/**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.POST,
                                     String.format("%s/products/**", apiPrefix)).hasAnyRole("ADMIN")
                             .requestMatchers(HttpMethod.PUT,
                                     String.format("%s/products/**", apiPrefix)).hasAnyRole("ADMIN")
                             .requestMatchers(HttpMethod.DELETE,
                                     String.format("%s/products/**", apiPrefix)).hasAnyRole("ADMIN")
-                            .requestMatchers(HttpMethod.POST,
-                                    String.format("%s/products/fakeProducts", apiPrefix)).permitAll()
 
                             .requestMatchers(HttpMethod.POST,
                                     String.format("%s/orders", apiPrefix)).permitAll()
@@ -115,6 +117,8 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.POST,
                                     String.format("%s/comments/fakeComment", apiPrefix)).permitAll()
 
+                            .requestMatchers(HttpMethod.GET,
+                                    String.format("%s/comments/product", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.GET,
                                     String.format("%s/comments/viewImages/**", apiPrefix)).permitAll()
                             .requestMatchers(HttpMethod.POST,

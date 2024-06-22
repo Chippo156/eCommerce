@@ -70,7 +70,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(String.format("%s/users/login", apiPrefix), "POST"),
                 Pair.of(String.format("%s/roles", apiPrefix), "GET"),
                 Pair.of(String.format("%s/coupons", apiPrefix), "GET"),
-                Pair.of(String.format("%s/comments", apiPrefix), "GET")
+                Pair.of(String.format("%s/comments", apiPrefix), "GET"),
+                Pair.of(String.format("%s/orders", apiPrefix), "POST")
 
         );
         String path = request.getServletPath();

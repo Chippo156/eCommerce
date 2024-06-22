@@ -25,13 +25,14 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonProperty("user")
+    @JsonIgnore
     private User user;
     @ManyToOne
     @JoinColumn(name = "product_id")
     @JsonIgnore
     private Product product;
     private int rating;
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<CommentImage> images;
 
 }

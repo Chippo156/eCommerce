@@ -14,13 +14,13 @@ import java.util.List;
 public class CommentResponse {
     private int rating;
     private String content;
-    private UserResponse user;
+    private String userName;
     private List<CommentImage> images;
     public static CommentResponse fromComment(Comment comment) {
         return CommentResponse.builder()
                 .content(comment.getCommentContent())
                 .rating(comment.getRating())
-                .user(UserResponse.fromUser(comment.getUser()))
+                .userName(comment.getUser().getFullName())
                 .images(comment.getImages())
                 .build();
     }

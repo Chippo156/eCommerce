@@ -3,6 +3,8 @@ package org.ecommerce.ecommerce.responses;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.ecommerce.ecommerce.models.*;
+import org.ecommerce.ecommerce.services.impl.ProductService;
+import org.hibernate.engine.jdbc.Size;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,7 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Builder
-public class ProductResponse extends  BaseResponse   {
+
+public class ProductResponse extends BaseResponse {
     private Long id;
     @JsonProperty("name")
     private String name;
@@ -31,14 +34,14 @@ public class ProductResponse extends  BaseResponse   {
     private List<ProductImage> productImages = new ArrayList<>();
     @JsonProperty("product_sale")
     private ProductSale sale;
-    @JsonProperty("comments")
-    private List<CommentResponse> comments;
-    @JsonProperty("sizes")
-    private List<ProductSize> sizes;
-    @JsonProperty("colors")
-    private List<Color> colors;
+    @JsonProperty("color")
+    private Color colors;
+    @JsonProperty("product_sizes")
+    private List<ProductSize> productSizes = new ArrayList<>();
+
+
     public static ProductResponse fromProduct(Product product) {
-        ProductResponse productResponse = ProductResponse.builder()
+        return ProductResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
@@ -48,12 +51,8 @@ public class ProductResponse extends  BaseResponse   {
                 .categoryId(product.getCategory().getId())
                 .productImages(product.getProductImages())
                 .sale(product.getSale())
-                .comments(product.getComments().stream().map(CommentResponse::fromComment).toList())
-                .sizes(product.getProductSizes())
-                .colors(product.getColors())
+                .colors(product.getColors().get(0))
+                .productSizes(product.getProductSizes())
                 .build();
-        productResponse.setCreatedAt(product.getCreatedAt());
-        productResponse.setUpdatedAt(product.getUpdatedAt());
-        return productResponse;
     }
 }

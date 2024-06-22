@@ -56,7 +56,6 @@ public class CategoryController {
                     .categories(categoryList)
                     .totalPage(totalPage)
                     .build());
-
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error");
         }

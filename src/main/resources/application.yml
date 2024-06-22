@@ -5,10 +5,6 @@ spring:
   application:
     name: ecommerce
   datasource:
-#    url: jdbc:mariadb://localhost:3306/eCommerce?useSSL=false&serverTimezone=UTC
-#    username: root
-#    password: 12345678
-#    driver-class-name: org.mariadb.jdbc.Driver
      url: jdbc:mysql://root:FewkVBNckOijgeeqVuZqbTkAlKQKzZGp@roundhouse.proxy.rlwy.net:25047/railway
      username: root
      password: FewkVBNckOijgeeqVuZqbTkAlKQKzZGp
@@ -28,6 +24,7 @@ spring:
   messages:
       basename: i18n/messages
       encoding: UTF-8
+
 api:
   prefix: api/v1
 

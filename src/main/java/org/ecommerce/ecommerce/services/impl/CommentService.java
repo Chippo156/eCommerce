@@ -11,6 +11,7 @@ import org.ecommerce.ecommerce.repository.CommentImageRepository;
 import org.ecommerce.ecommerce.repository.CommentRepository;
 import org.ecommerce.ecommerce.repository.ProductRepository;
 import org.ecommerce.ecommerce.repository.UserRepository;
+import org.ecommerce.ecommerce.responses.CommentResponse;
 import org.ecommerce.ecommerce.services.iCommentService;
 import org.springframework.stereotype.Service;
 
@@ -89,5 +90,10 @@ public class CommentService implements iCommentService {
         }catch (Exception e){
             throw new RuntimeException("Error while saving image");
         }
+    }
+
+    @Override
+    public List<CommentResponse> getCommentsByProductId(Long productId) {
+        return commentRepository.findByProduct(productId).stream().map(CommentResponse::fromComment).toList();
     }
 }

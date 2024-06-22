@@ -4,6 +4,7 @@ import org.ecommerce.ecommerce.dtos.OrderDetailDTO;
 import org.ecommerce.ecommerce.exceptions.DataNotFoundException;
 import org.ecommerce.ecommerce.models.Order;
 import org.ecommerce.ecommerce.models.OrderDetail;
+import org.ecommerce.ecommerce.responses.CountProductByOrdersResponse;
 import org.ecommerce.ecommerce.responses.OrderDetaiResponse;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface iOrderDetailService {
 
     List<OrderDetaiResponse> findByOrderId(Long orderId);
 
-    Map<Long,Integer> countNumberOfProduct();
+   List<CountProductByOrdersResponse> countNumberOfProduct();
 
 
 

@@ -9,6 +9,7 @@ import org.ecommerce.ecommerce.repository.CategoryRepository;
 import org.ecommerce.ecommerce.repository.ProductImageRepository;
 import org.ecommerce.ecommerce.repository.ProductRepository;
 import org.ecommerce.ecommerce.repository.ProductSaleRepository;
+import org.ecommerce.ecommerce.responses.ProductRatingResponse;
 import org.ecommerce.ecommerce.responses.ProductResponse;
 import org.ecommerce.ecommerce.services.iProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductService implements iProductService {
@@ -57,19 +59,19 @@ public class ProductService implements iProductService {
             product.setName(productDTO.getProductName());
 
             product.setPrice(productDTO.getPrice());
-            if(productDTO.getDescription() != null){
-            product.setDescription(productDTO.getDescription());}
+            if (productDTO.getDescription() != null) {
+                product.setDescription(productDTO.getDescription());
+            }
             if (productDTO.getThumbnail() != null) {
                 product.setThumbnail(productDTO.getThumbnail());
             }
 
 
-
-            if(productDTO.getCategoryId() != null) {
+            if (productDTO.getCategoryId() != null) {
                 Category category = categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(() -> new DataNotFoundException("Cannot find category with id: " + productDTO.getCategoryId()));
                 product.setCategory(category);
             }
-            if(productDTO.getSaleId() != null) {
+            if (productDTO.getSaleId() != null) {
                 ProductSale productSale = productSaleRepository.findById(productDTO.getSaleId()).orElseThrow(()
                         -> new DataNotFoundException("Cannot find sale with id: " + productDTO.getSaleId()));
                 product.setSale(productSale);
@@ -95,6 +97,9 @@ public class ProductService implements iProductService {
     public Page<ProductResponse> getAllProducts(String keyword, Long categoryId, PageRequest pageRequest) {
         return productRepository.searchProducts(categoryId, keyword, pageRequest).map(ProductResponse::fromProduct);
     }
+
+
+
 
     @Override
     public boolean existsByProductName(String productName) {
@@ -127,11 +132,21 @@ public class ProductService implements iProductService {
 
     @Override
     public List<ProductResponse> getProductsByCategoryId(Long categoryId) {
-       return productRepository.findAllByCategoryId(categoryId).stream().map(ProductResponse::fromProduct).toList();
+        return productRepository.findAllByCategoryId(categoryId).stream().map(ProductResponse::fromProduct).toList();
     }
 
     @Override
     public List<ProductResponse> getProductsByCategoryName(String categoryName) {
         return productRepository.findAllByCategoryName(categoryName).stream().map(ProductResponse::fromProduct).toList();
+    }
+
+    @Override
+    public List<ProductRatingResponse> getRatingProducts() {
+        return productRepository.getRatingProducts();
+    }
+
+    @Override
+    public List<ProductSize> getProductSizesByProductId(Long productId) {
+        return productRepository.getProductSizesByProductId(productId);
     }
 }

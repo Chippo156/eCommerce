@@ -47,9 +47,4 @@ public class OrderDTO {
     @JsonProperty("cart_items")
     private List<CartItemDTO> cartItems;
 
-
-
-
-
-
 }

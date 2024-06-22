@@ -85,18 +85,7 @@ public class OrderDetailController {
     @GetMapping("/countQuantity")
     public ResponseEntity<?> countNumberOfProduct() {
         try {
-
-            Map<Product,Integer> map = new HashMap<>();
-            Map<Long, Integer> count = orderDetailService.countNumberOfProduct();
-            count.forEach((key, value) -> {
-                Product product = productRepository.findById(key).orElse(null);
-                map.put(product,value);
-            });
-            List<SoldProductResponse> soldProductResponses = map.entrySet().stream().map(e -> SoldProductResponse.builder()
-                    .productResponse(ProductResponse.fromProduct(e.getKey()))
-                    .quantity(e.getValue())
-                    .build()).toList();
-            return ResponseEntity.ok(soldProductResponses);
+            return ResponseEntity.ok(orderDetailService.countNumberOfProduct());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

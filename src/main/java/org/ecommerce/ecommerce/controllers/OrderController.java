@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -43,13 +44,16 @@ public class OrderController {
     }
 
     @PostMapping("")
+    @Transactional
     public ResponseEntity<?> createOrder(@Valid @RequestBody OrderDTO orderDTO, BindingResult result) {
         try {
             if (result.hasErrors()) {
                 List<String> errors = result.getFieldErrors().stream().map(FieldError::getField).toList();
                 return ResponseEntity.badRequest().body(errors);
             }
-            return ResponseEntity.ok(OrderResponse.fromOrder(orderService.createOrder(orderDTO)));
+            OrderResponse orderResponse = OrderResponse.fromOrder(orderService.createOrder(orderDTO));
+            return ResponseEntity.ok(orderResponse.getOrderId());
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

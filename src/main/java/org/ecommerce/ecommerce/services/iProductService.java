@@ -7,12 +7,15 @@ import org.ecommerce.ecommerce.exceptions.InvalidParamException;
 import org.ecommerce.ecommerce.models.Color;
 import org.ecommerce.ecommerce.models.Product;
 import org.ecommerce.ecommerce.models.ProductImage;
+import org.ecommerce.ecommerce.models.ProductSize;
+import org.ecommerce.ecommerce.responses.ProductRatingResponse;
 import org.ecommerce.ecommerce.responses.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface iProductService {
     Product createProduct(ProductDTO productDTO) throws DataNotFoundException;
@@ -29,5 +32,7 @@ public interface iProductService {
     List<ProductResponse> getProductsByCategoryId(Long categoryId);
 
     List<ProductResponse> getProductsByCategoryName(String categoryName);
+    List<ProductRatingResponse> getRatingProducts();
+    List<ProductSize> getProductSizesByProductId(Long productId);
 
 }

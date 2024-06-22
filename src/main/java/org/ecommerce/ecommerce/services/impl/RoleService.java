@@ -12,9 +12,6 @@ import java.util.List;
 public class RoleService implements iRoleService {
     @Autowired
     private RoleRepository roleRepository;
-
-
-
     @Override
     public List<Role> getAllRoles() {
         return roleRepository.findAll();

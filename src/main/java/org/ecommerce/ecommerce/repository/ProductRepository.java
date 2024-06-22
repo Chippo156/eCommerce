@@ -2,6 +2,8 @@ package org.ecommerce.ecommerce.repository;
 
 import org.ecommerce.ecommerce.models.Color;
 import org.ecommerce.ecommerce.models.Product;
+import org.ecommerce.ecommerce.models.ProductSize;
+import org.ecommerce.ecommerce.responses.ProductRatingResponse;
 import org.ecommerce.ecommerce.responses.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
@@ -27,5 +30,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findAllByCategoryId(Long category_id);
     @Query("SELECT c FROM Product c WHERE LOWER(c.name) LIKE CONCAT('%', LOWER(:category_name), '%')")
     List<Product> findAllByCategoryName(@Param("category_name") String category_name);
+
+    @Query("SELECT new org.ecommerce.ecommerce.responses.ProductRatingResponse(c.product.id, avg(c.rating),COUNT(*)) from Comment c group by c.product.id order by c.product.id desc")
+    List<ProductRatingResponse> getRatingProducts();
+
+    @Query("select c.productSizes from Product c where c.id = :id")
+    List<ProductSize> getProductSizesByProductId(Long id);
+
 
 }

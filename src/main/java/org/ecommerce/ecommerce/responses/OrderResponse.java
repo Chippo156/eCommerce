@@ -44,9 +44,6 @@ public class OrderResponse {
     private String trackingNumber;
     @JsonProperty("is_active")
     private boolean active;
-
-
-
     public static OrderResponse fromOrder(Order order)
     {
         return OrderResponse.builder()
